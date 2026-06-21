@@ -30,6 +30,10 @@ The File I/O Layer is responsible for accessing local files and directories. The
 
 In Week 2, the project mainly implemented the early foundation of this architecture by focusing on local file metadata extraction.
 
+![Figure 1. Week 2 project structure with documentation, metadata model, service module, sample files, and test script.](images/week2_project_structure.png)
+
+Figure 1. Week 2 project structure with documentation, metadata model, service module, sample files, and test script.
+
 ## 3. Metadata Extraction Implementation
 
 A new FileMetadata model was created in `lib/models/file_metadata.dart`. This model stores basic information about each local file, including file name, file path, file extension, file size in bytes, and last modified time.
@@ -53,27 +57,27 @@ The purpose of using simple test files is to verify that the system can correctl
 
 ### 5.1 FileMetadata Model
 
-The FileMetadata model defines the basic data structure used to store local file information.
+The FileMetadata model defines the basic data structure used to store local file information. It includes fields for file name, file path, file extension, file size, and last modified time.
 
-[Insert screenshot of `lib/models/file_metadata.dart` here]
+![Figure 2. FileMetadata model for storing local file metadata.](images/file_metadata_model.png)
 
-Figure 1. FileMetadata model for storing local file metadata.
+Figure 2. FileMetadata model for storing local file metadata.
 
 ### 5.2 MetadataService
 
-The MetadataService is responsible for scanning a local directory and extracting metadata from files.
+The MetadataService is responsible for scanning a local directory and extracting metadata from files. It checks whether the directory exists, loops through files in the selected directory, reads file status information, and creates FileMetadata objects.
 
-[Insert screenshot of `lib/services/metadata_service.dart` here]
+![Figure 3. MetadataService implementation for extracting metadata from local files.](images/metadata_service.png)
 
-Figure 2. MetadataService implementation for extracting metadata from local files.
+Figure 3. MetadataService implementation for extracting metadata from local files.
 
 ### 5.3 Dart Command-Line Test Script
 
 A separate Dart command-line test script was created in `tool/test_metadata_extraction.dart`. This script allows the metadata extraction logic to be tested independently from the Flutter UI.
 
-[Insert screenshot of `tool/test_metadata_extraction.dart` here]
+![Figure 4. Dart command-line test script for metadata extraction.](images/dart_cli_test_script.png)
 
-Figure 3. Dart command-line test script for metadata extraction.
+Figure 4. Dart command-line test script for metadata extraction.
 
 ## 6. Running Result
 
@@ -87,19 +91,15 @@ The output included:
 * File size
 * Last modified time
 
-[Insert screenshot of Dart terminal output here]
+![Figure 5. Metadata extraction result printed in the Dart command-line console.](images/metadata_extraction_result.png)
 
-Figure 4. Metadata extraction result printed in the Dart command-line console.
+Figure 5. Metadata extraction result printed in the Dart command-line console.
 
 The successful console output confirms that the basic metadata extraction module works correctly and that the project is ready for the next stage of file parsing development.
 
 ## 7. Flutter UI Test
 
 The Flutter application was also launched successfully in Chrome. The Week 2 test interface displayed the project title and indicated that the metadata extraction test should be checked through the Android Studio Run console.
-
-[Insert screenshot of Flutter Chrome interface here]
-
-Figure 5. Flutter Week 2 test interface successfully launched in Chrome.
 
 However, direct local file metadata extraction through Flutter Web produced an unsupported operation issue because the implementation uses `dart:io` for local file system access. This is a platform limitation of the web runtime rather than a failure of the metadata extraction logic.
 
@@ -117,9 +117,9 @@ The project also needed to clearly distinguish completed work from planned futur
 
 The Week 2 changes were committed and pushed to the GitHub repository. This update includes the Week 2 documentation files, metadata model, metadata service, sample files, and the Dart command-line test script.
 
-[Insert screenshot of successful GitHub push here]
+![Figure 6. Week 2 metadata extraction module successfully pushed to the GitHub repository.](images/github_week2_update.png)
 
-Figure 6. Week 2 commit successfully pushed to the GitHub repository.
+Figure 6. Week 2 metadata extraction module successfully pushed to the GitHub repository.
 
 ## 10. Week 2 Summary
 

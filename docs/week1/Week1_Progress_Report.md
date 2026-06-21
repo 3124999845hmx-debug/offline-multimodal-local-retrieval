@@ -70,6 +70,10 @@ The successful test run confirms that the Flutter development environment is wor
 
 The only remaining Flutter Doctor warning is related to Visual Studio C++ desktop components, which are required for Windows desktop Flutter builds. This is not currently blocking the Week 1 environment validation because the current validation focuses on Flutter Web and Android toolchain readiness. If Windows desktop packaging becomes necessary later, the Visual Studio C++ workload will be installed.
 
+![Figure 1. Flutter test application successfully launched](./images/flutter_running_result.png)
+
+Figure 1 shows that the Flutter test application was successfully launched. The result confirms that the Flutter environment, Android Studio configuration, and basic project execution were working correctly during Week 1.
+
 ### 4.3 Dataset Preparation Planning
 
 A Dataset Preparation Report has been prepared. The report identifies the official dataset sources and explains their planned use in this project.
@@ -110,28 +114,45 @@ The following Week 1 deliverables have been prepared:
 4. Risk Management Plan
 5. Week 1 Progress Report
 
-These documents are intended to demonstrate that the project has been understood, the scope has been clarified, the development environment has been started successfully, the dataset plan has been considered, and the main project risks have been identified.
+![Figure 2. GitHub repository for version control](./images/github_repository_top.png)
 
+Figure 2 shows the GitHub repository created for version control, project backup, and weekly progress tracking.
+
+![Figure 3. GitHub README project overview](./images/github_readme.png)
+
+Figure 3 shows the README page in the GitHub repository. It presents the project aim, project focus, system workflow, and Week 1 deliverables.
 ## 6. Current Technical Status
 
 The current technical status is summarized below:
 
-| Area                                 | Status             | Notes                                                     |
-| ------------------------------------ | ------------------ | --------------------------------------------------------- |
-| Android Studio                       | Completed          | Installed and opened successfully                         |
-| Flutter plugin                       | Completed          | Installed in Android Studio                               |
-| Dart plugin                          | Completed          | Installed with Flutter support                            |
-| Flutter SDK                          | Completed          | Installed and added to PATH                               |
-| Android SDK                          | Completed          | Installed through Android Studio                          |
-| Android SDK licenses                 | Completed          | Accepted through command line                             |
-| Test Flutter app                     | Completed          | Successfully launched in Chrome                           |
-| Git / GitHub                         | Pending            | To be configured for official project repository          |
-| Python environment                   | Pending            | To be configured for retrieval logic and data processing  |
-| Chroma DB                            | Pending            | To be installed for vector database prototype             |
+| Area                                 | Status             | Notes                                                    |
+| ------------------------------------ |--------------------| -------------------------------------------------------- |
+| Android Studio                       | Completed          | Installed and opened successfully                        |
+| Flutter plugin                       | Completed          | Installed in Android Studio                              |
+| Dart plugin                          | Completed          | Installed with Flutter support                           |
+| Flutter SDK                          | Completed          | Installed and added to PATH                              |
+| Android SDK                          | Completed          | Installed through Android Studio                         |
+| Android SDK licenses                 | Completed          | Accepted through command line                            |
+| Test Flutter app                     | Completed          | Successfully launched in Chrome                          |
+| Git / GitHub                         | Completed          | Repository created and pushed to GitHub for version control          |
+| Python environment                   | Pending            | To be configured for retrieval logic and data processing |
+| Chroma DB                            | Pending            | To be installed for vector database prototype            |
 | TensorFlow Lite                      | Planned            | To be configured when embedding engine development starts |
-| Visual Studio C++ desktop components | Pending / Optional | Needed only for Windows desktop build packaging           |
+| Visual Studio C++ desktop components | Pending / Optional | Needed only for Windows desktop build packaging          |
 
-## 7. Key Decisions Made
+![Figure 4. Initial Flutter project structure in Android Studio](./images/project_structure.png)
+
+Figure 4 shows the initial Flutter project structure created in Android Studio, including the `lib`, `test`, `web`, `windows`, `android`, `docs`, and `data` folders.
+## 7. Key Code Snippet
+
+The following screenshots show the initial `lib/main.dart` file used for the Week 1 Flutter environment validation. At this stage, the code focuses on confirming that the Flutter application can be launched successfully before the later file parsing and retrieval modules are implemented.
+
+![Figure 5. Basic Flutter application entry point in main.dart](./images/main_dart_code_1.png)
+
+![Figure 6. Initial Flutter UI structure in main.dart](./images/main_dart_code_2.png)
+
+The code defines the main application entry point, creates a basic `MaterialApp`, and displays a simple home page. This confirms that the project can compile and run successfully in the Flutter development environment.
+## 8. Key Decisions Made
 
 Several initial project decisions have been made during Week 1:
 
@@ -142,8 +163,7 @@ Several initial project decisions have been made during Week 1:
 5. Flutter will be used for the user interface because the project requires cross-platform UI development.
 6. Metadata and embeddings will be treated separately: embeddings support similarity comparison, while metadata helps locate the original file.
 7. Accessibility will be included from the early design stage, but full WCAG 2.1 AA validation will be treated as an iterative goal.
-
-## 8. Problems Encountered and Solutions
+## 9. Problems Encountered and Solutions
 
 ### Problem 1: Android SDK Command-line Tools Missing
 
@@ -172,7 +192,7 @@ Flutter Doctor reported that Visual Studio was missing required C++ desktop comp
 **Solution:**
 This issue has been recorded as a non-blocking warning. It does not affect Flutter Web or Android testing. It will be resolved later if Windows desktop packaging is required.
 
-## 9. Plan for Week 2
+## 10. Plan for Week 2
 
 The planned focus for Week 2 is system architecture design and core file parsing module development.
 
@@ -195,7 +215,7 @@ The Week 2 work will include:
 
 The main goal for Week 2 is to move from project preparation into system structure and core ingestion pipeline development.
 
-## 10. Support or Feedback Needed
+## 11. Support or Feedback Needed
 
 At this stage, feedback would be helpful on the following points:
 
@@ -205,7 +225,7 @@ At this stage, feedback would be helpful on the following points:
 4. Whether the selected technical stack should be adjusted before Week 2 begins.
 5. Whether the current Week 1 deliverables meet the expected standard.
 
-## 11. Conclusion
+## 12. Conclusion
 
 Week 1 focused on understanding the project, preparing initial documentation, setting up the development environment, identifying dataset sources, and planning risk mitigation strategies.
 

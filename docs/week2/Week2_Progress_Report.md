@@ -121,6 +121,8 @@ The Week 2 changes were committed and pushed to the GitHub repository. This upda
 
 Figure 6. Week 2 metadata extraction module successfully pushed to the GitHub repository.
 
+
+
 ## 10. Week 2 Summary
 
 During Week 2, the project moved from environment setup to initial functional development. The modular architecture was defined, the FileMetadata model was created, and the MetadataService module was implemented. Simple sample files were prepared for testing, and the metadata extraction function was validated through Dart command-line output.

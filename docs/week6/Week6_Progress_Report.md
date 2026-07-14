@@ -31,6 +31,7 @@ The specific objectives of Week 6 were:
 - Create a Dart command-line test for the complete Week 6 pipeline.
 - Validate related and unrelated search queries.
 - Update project documentation and prepare Week 6 screenshots.
+- Commit and push the completed Week 6 implementation to GitHub.
 
 ---
 
@@ -1314,10 +1315,42 @@ The following Week 6 deliverables were completed:
 16. Unrelated-query validation
 17. Week 6 screenshots
 18. Week 6 Progress Report
+19. Week 6 GitHub commit and remote push
 
 ---
 
-## 11. Current Technical Status
+## 11. GitHub Update
+
+After the Week 6 implementation, documentation, screenshots, and test results were completed, the new source code and supporting project files were committed and pushed to the remote GitHub repository.
+
+The Week 6 update included:
+
+```text
+lib/models/embedding_vector.dart
+lib/models/similarity_result.dart
+lib/services/simple_embedding_service.dart
+lib/services/similarity_search_service.dart
+tool/test_similarity_search.dart
+docs/week6/
+```
+
+The commit message was:
+
+```text
+Complete Week 6 embedding and similarity search prototype
+```
+
+The changes were successfully pushed to the `main` branch of the remote GitHub repository.
+
+![GitHub Week 6 Update](images/github_week6_update.png)
+
+**Figure 20.** GitHub repository after the successful Week 6 push. The latest Week 6 commit appears on the `main` branch, and the updated `docs`, `lib`, and `tool` folders are visible in the repository.
+
+The successful GitHub update confirms that the Week 6 source code, screenshots, documentation, and progress report were stored in the remote repository for version control, backup, and future development.
+
+---
+
+## 12. Current Technical Status
 
 | Area | Status | Notes |
 |---|---|---|
@@ -1339,6 +1372,7 @@ The following Week 6 deliverables were completed:
 | Result limit | Completed | Optional maximum result count |
 | Zero-vector validation | Completed | Empty query vectors return no results |
 | Vector-dimension validation | Completed | Prevents inconsistent vector comparison |
+| GitHub version control | Completed | Week 6 changes pushed to main |
 | Vector database | Pending | Vectors currently stored in memory |
 | BERT/TFLite embedding | Planned | Future semantic embedding |
 | Image embedding | Planned | Future multimodal stage |
@@ -1347,7 +1381,7 @@ The following Week 6 deliverables were completed:
 
 ---
 
-## 12. Week 7 Plan
+## 13. Week 7 Plan
 
 The next development stage should focus on moving from a command-line similarity prototype toward a more practical retrieval system.
 

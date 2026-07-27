@@ -1819,6 +1819,7 @@ The following Week 7 deliverables were completed:
 37. Static analysis correction
 38. Week 7 screenshots
 39. Week 7 Progress Report
+40. Week 7 GitHub commit and remote push
 
 ---
 
@@ -1864,9 +1865,9 @@ The following Week 7 deliverables were completed:
 
 ## 21. GitHub Version Control Update
 
-The Week 7 implementation, screenshots, and progress documentation were prepared as a single version-controlled update.
+After the Week 7 Flutter interface, functional tests, screenshots, and progress documentation were completed, the new files were committed and pushed to the remote GitHub repository.
 
-The Week 7 update includes:
+The Week 7 update included:
 
 ```text
 lib/main.dart
@@ -1875,30 +1876,19 @@ docs/week7/Week7_Progress_Report.md
 docs/week7/images/
 ```
 
-The recommended Git workflow is:
-
-```bash
-git status
-git add lib/main.dart lib/screens/search_screen.dart docs/week7
-git commit -m "Complete Week 7 Flutter search interface"
-git push origin main
-```
-
-Before committing, `git status` should be reviewed to confirm that only the intended Week 7 source files, documentation, and screenshots are included.
-
-After a successful push, the GitHub repository should show the Week 7 commit on the `main` branch and the new files under `docs/week7`, `lib/screens`, and `lib/main.dart`.
-
-The final GitHub evidence screenshot should be saved as:
+The commit message was:
 
 ```text
-docs/week7/images/github_week7_update.png
+Complete Week 7 Flutter search interface
 ```
+
+The changes were successfully pushed to the `main` branch of the remote repository.
 
 ![Week 7 GitHub Update](images/github_week7_update.png)
 
-**Figure 12.** Week 7 Flutter search interface, screenshots, and progress report committed and pushed to the GitHub repository.
+**Figure 12.** GitHub repository after the successful Week 7 push, showing the latest `Complete Week 7 Flutter search interface` commit on the `main` branch and the updated Week 7 source code, screenshots, and documentation.
 
-At the time of this draft, this section is ready to be finalised after the successful GitHub push and screenshot capture.
+The successful push confirms that the Week 7 Flutter interface, functional evidence, and progress documentation are stored in the remote repository for version control, backup, and future development.
 
 ---
 

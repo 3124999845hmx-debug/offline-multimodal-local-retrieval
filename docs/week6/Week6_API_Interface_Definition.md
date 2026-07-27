@@ -992,10 +992,8 @@ An OpenAPI specification should only be added after actual HTTP endpoints are im
 This document is currently marked as:
 
 ```text
-Version: 0.1 Draft
-Status: Draft
+Version: 1.0
+Status: Final
 ```
 
-The detailed interface definitions have been prepared from the Week 6 source-code structure.
-
-Final verification against the latest source code, screenshots, review information, and version history will be completed after Week 8.
+The detailed interface definitions were reviewed during Week 8 finalisation and confirmed against the completed Week 6 source code, test evidence, screenshots, and version history.

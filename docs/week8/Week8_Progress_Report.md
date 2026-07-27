@@ -68,6 +68,7 @@ The current Week 8 evidence images include:
 flutter_test_final.png
 windows_app_final_initial.png
 windows_app_final_search.png
+github_week8_final.png
 ```
 
 The updated automated widget-test file is:
@@ -260,8 +261,6 @@ test/widget_test.dart
 The final test implementation is shown below.
 
 ```dart
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:offline_multimodal_retrieval/main.dart';
@@ -906,7 +905,14 @@ The Week 6 test report describes:
 - Risks
 - Traceability
 
-These documents are currently structured as draft-stage Week 6 records and can be reviewed again during final repository inspection.
+These documents were reviewed during Week 8 finalisation and confirmed against the completed Week 6 source code and test evidence.
+
+Their document-control status was updated to:
+
+```text
+Version: 1.0
+Status: Final
+```
 
 ---
 
@@ -941,14 +947,16 @@ Week 8 system architecture document
 Week 8 progress report
 ```
 
-The remaining final project-level files are:
+The final project-level files were also completed:
 
 ```text
 README.md
 LICENSE
 ```
 
-These will be reviewed and completed before the final GitHub push.
+The root README now documents installation, execution, testing, architecture, supported features, limitations, and future development.
+
+The repository is distributed under the MIT License.
 
 ---
 
@@ -984,8 +992,8 @@ These will be reviewed and completed before the final GitHub push.
 | Final test report | Completed | Week 8 |
 | User guide | Completed | Week 8 |
 | System architecture | Completed | Week 8 |
-| README finalisation | Pending | Final review required |
-| Licence | Pending | Final addition required |
+| README finalisation | Completed | Root README updated |
+| MIT licence | Completed | Root `LICENSE` added |
 | Persistent storage | Future work | In-memory only |
 | Neural embeddings | Future work | Not implemented |
 | Image retrieval | Future work | Not implemented |
@@ -1144,8 +1152,10 @@ Week 8 completed the following major tasks:
 24. Created user guide.
 25. Created system architecture document.
 26. Created Week 8 progress report.
-27. Prepared project for final README and licence completion.
-28. Prepared project for final GitHub delivery.
+27. Completed the final root README.
+28. Added the MIT License.
+29. Committed and pushed the Week 8 finalisation.
+30. Captured final GitHub delivery evidence.
 
 ---
 
@@ -1181,23 +1191,39 @@ PASS
 
 ---
 
-## 29. Remaining Finalisation Tasks
+## 29. Finalisation Completion Status
 
-Before the final GitHub push, the following tasks remain:
+The finalisation checklist was completed:
 
 ```text
-1. Update the root README.md
-2. Add or confirm the project LICENSE
-3. Review all Week 8 Markdown files
-4. Check image links
-5. Run flutter analyze again
-6. Run flutter test again
-7. Run git status
-8. Stage intended files
-9. Commit Week 8 finalisation
-10. Push to the main branch
-11. Capture final GitHub evidence
-12. Confirm working tree is clean
+1. Root README.md updated
+2. MIT LICENSE added
+3. Week 8 Markdown documents reviewed
+4. Image links checked
+5. flutter analyze rerun
+6. flutter test rerun
+7. git status reviewed
+8. Intended files staged
+9. Week 8 finalisation committed
+10. Changes pushed to the main branch
+11. Final GitHub evidence captured
+12. Working tree confirmed clean
+```
+
+The final verification results were:
+
+```text
+flutter analyze:
+0 errors
+0 warnings
+100 information-level notices
+
+flutter test:
+3 passed
+0 failed
+
+git status:
+nothing to commit, working tree clean
 ```
 
 ---
@@ -1245,6 +1271,40 @@ Test failure
 → Final pass
 ```
 
-The remaining work focuses on project-level presentation and open-source delivery rather than core retrieval functionality.
+The project-level presentation, open-source licensing, and repository delivery were also completed.
 
-The final Week 8 result confirms that the current prototype is functional, testable, reproducible, and ready for final repository packaging.
+The final Week 8 result confirms that the current prototype is functional, testable, reproducible, documented, licensed, and delivered through the remote GitHub repository.
+
+---
+
+## 31. Final GitHub Delivery
+
+The completed Week 8 source code, automated tests, final documentation, screenshots, README update, and MIT licence were committed and pushed to the remote GitHub repository.
+
+The final Week 8 update included:
+
+```text
+README.md
+LICENSE
+test/widget_test.dart
+docs/week8/Final_Test_Report.md
+docs/week8/System_Architecture.md
+docs/week8/User_Guide.md
+docs/week8/Week8_Progress_Report.md
+docs/week8/images/
+```
+
+The commit message was:
+
+```text
+Complete Week 8 final testing and documentation
+```
+
+The changes were successfully pushed to the `main` branch.
+
+![Final Week 8 GitHub Delivery](images/github_week8_final.png)
+
+**Figure 4.** Final GitHub repository state showing the Week 8 documentation, automated tests, updated README, MIT licence, and final delivery commit.
+
+The repository was confirmed to be synchronised with the remote `main` branch, with no remaining uncommitted changes.
+

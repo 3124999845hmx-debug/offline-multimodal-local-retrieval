@@ -9,8 +9,8 @@
 | Project | Offline Multimodal Local Retrieval System |
 | Document Title | Week 6 Software Test Report |
 | Document Type | Component and Integration Test Report |
-| Version | 0.1 Draft |
-| Status | Draft |
+| Version | 1.0 |
+| Status | Final |
 | Author | Mingxuan Huang |
 | Date | 2026/07/27 |
 | Test Stage | Week 6 Embedding and Similarity Search |
@@ -847,10 +847,12 @@ PASS
 This document is currently marked as:
 
 ```text
-Version: 0.1 Draft
-Status: Draft
+Version: 1.0
+Status: Final
 ```
 
-The core test cases, execution results, defects, and traceability structure have been recorded.
+The core test cases, execution results, defects, risks, and requirements traceability were reviewed during Week 8 finalisation.
 
-Final screenshots, exact execution date, final reviewer information, GitHub evidence, and document approval status will be added after Week 8.
+The document was confirmed against the completed Week 6 source code, command-line test evidence, final repository history, and Week 8 validation records.
+
+No further approval or evidence updates are required for the current project submission.

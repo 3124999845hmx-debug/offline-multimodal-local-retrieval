@@ -8,12 +8,14 @@
 |---|---|
 | Project | Offline Multimodal Local Retrieval System |
 | Document Title | Final Software Test Report |
-| Document Type | Final Functional, Integration, Widget, and Execution Test Report |
-| Version | 1.0 |
+| Document Type | Final Functional, Integration, Widget, Image Retrieval, and Execution Test Report |
+| Version | 1.1 |
 | Status | Final |
 | Author | Mingxuan Huang |
-| Date | 2026/07/27 |
+| Original Date | 2026/07/27 |
+| Final Revision Date | 2026/07/30 |
 | Test Stage | Week 8 Final Validation |
+| Validated Platform | Windows Desktop |
 | Reference Approach | Structured with reference to ISO/IEC/IEEE 29119-3 test documentation principles |
 
 ---
@@ -22,21 +24,30 @@
 
 This document records the final software testing performed for the Offline Multimodal Local Retrieval System.
 
-The final test phase validates the complete prototype developed from Week 1 to Week 8, including:
+The final test phase validates the complete Windows desktop prototype developed from Week 1 to Week 8.
 
-- Local file parsing
-- Metadata extraction
-- Text processing
+The tested system now includes:
+
+- Local TXT and Markdown file parsing
+- File metadata extraction
+- Text cleaning and normalisation
 - Text chunking
 - Vocabulary generation
 - Term-frequency vector generation
 - Query-vector generation
 - Cosine-similarity calculation
-- Ranked retrieval
+- Ranked text retrieval
+- JPG, JPEG, and PNG image loading
+- Image metadata loading
+- Image description and tag processing
+- Text-to-image retrieval
+- Ranked image-result display
+- Local image-thumbnail display
 - Flutter user-interface integration
 - Windows desktop execution
 - Widget-level interaction testing
-- Error and empty-result handling
+- Empty-query and empty-result handling
+- Unsupported-file handling
 
 This report does not claim formal ISO certification.
 
@@ -48,30 +59,38 @@ Its structure is organised with reference to recognised software-test documentat
 
 The final test phase had the following objectives:
 
-1. Confirm that the project source code contains no compile-blocking error.
+1. Confirm that the project contains no compile-blocking source-code errors.
 2. Confirm that the Flutter application builds successfully for Windows.
 3. Confirm that the Windows desktop application starts successfully.
-4. Confirm that supported local documents are loaded and indexed.
-5. Confirm that unsupported files are skipped safely.
-6. Confirm that the search interface is displayed correctly.
-7. Confirm that valid queries return ranked results.
-8. Confirm that unrelated queries return an empty-result state.
-9. Confirm that an empty query displays a validation message.
-10. Confirm that the Clear button removes the current query.
-11. Confirm that the existing asynchronous file-processing pipeline works in widget tests.
-12. Confirm that the final project remains functional after Week 7 UI integration.
-13. Record known lint notices, defects, limitations, and resolutions.
+4. Confirm that supported local text documents are loaded and indexed.
+5. Confirm that supported local image files are loaded.
+6. Confirm that image metadata is converted into searchable image objects.
+7. Confirm that unsupported files are skipped safely.
+8. Confirm that the search interface is displayed correctly.
+9. Confirm that text queries return ranked text results.
+10. Confirm that text queries return relevant image results.
+11. Confirm that image thumbnails are displayed.
+12. Confirm that unrelated queries return an empty-result state.
+13. Confirm that an empty query displays a validation message.
+14. Confirm that the Clear button removes the current query and both result types.
+15. Confirm that Reload rebuilds both text and image indexes.
+16. Confirm that Enter-key search works.
+17. Confirm that real local file-system operations work during widget tests.
+18. Confirm that the image extension does not break the original text-retrieval pipeline.
+19. Record known lint notices, defects, limitations, risks, and resolutions.
 
 ---
 
 ## 4. System Under Test
 
-The system under test is a local-first Flutter desktop retrieval prototype.
+The system under test is a local-first Flutter Windows desktop retrieval prototype.
 
-The main workflow is:
+The system contains two retrieval branches.
+
+### 4.1 Text Retrieval Branch
 
 ```text
-Local document directory
+Local TXT and Markdown files
 → File parsing
 → Parsed documents
 → Text processing
@@ -81,36 +100,77 @@ Local document directory
 → Term-frequency vectors
 → User query vector
 → Cosine similarity
-→ Ranked results
-→ Flutter desktop interface
+→ Ranked text results
+→ Flutter interface
 ```
 
-The current local test directory is:
+### 4.2 Image Retrieval Branch
+
+```text
+Local JPG and PNG files
+→ image_metadata.json
+→ Image metadata loading
+→ Description and tag processing
+→ Searchable image text
+→ Term-frequency vectors
+→ User query vector
+→ Cosine similarity
+→ Ranked image results
+→ Local thumbnail display
+```
+
+### 4.3 Unified Query Flow
+
+```text
+One text query
+├── Search indexed text chunks
+└── Search indexed image descriptions and tags
+```
+
+The current text directory is:
 
 ```text
 data/sample_documents
 ```
 
-The current supported content types are:
+The current image directory is:
 
 ```text
-TXT
-Markdown
+data/sample_images
 ```
-
-The current unsupported test type is:
-
-```text
-PDF
-```
-
-Unsupported PDF files are skipped safely.
 
 ---
 
-## 5. Test Scope
+## 5. Supported and Unsupported Types
 
-### 5.1 Included
+### 5.1 Supported Text Types
+
+```text
+.txt
+.md
+```
+
+### 5.2 Supported Image Types
+
+```text
+.jpg
+.jpeg
+.png
+```
+
+### 5.3 Unsupported Test Type
+
+```text
+.pdf
+```
+
+The test PDF is detected and skipped safely.
+
+---
+
+## 6. Test Scope
+
+### 6.1 Included
 
 The final test scope included:
 
@@ -118,27 +178,41 @@ The final test scope included:
 - Windows desktop toolchain validation
 - Dependency resolution
 - Static source-code analysis
+- Image metadata JSON validation
+- Image-file existence validation
+- Supported image-extension validation
+- Text-retrieval service testing
+- Image metadata loading
+- Text-to-image retrieval
+- Query normalisation
+- Vocabulary generation
+- Vector generation
+- Cosine-similarity calculation
+- Similarity-score sorting
+- Result limiting
+- Empty-query handling
+- Unrelated-query handling
 - Widget tests
-- Asynchronous local file access during widget tests
+- Real asynchronous local file access during widget tests
 - Search-interface startup
 - Search-field rendering
 - Search button rendering
 - Clear button rendering
 - Pipeline-summary rendering
-- Empty-query validation
-- Query-clearing behaviour
+- Image-count rendering
 - Windows desktop build
 - Windows desktop execution
-- Local file parsing
-- Unsupported file handling
-- Retrieval-pipeline initialisation
-- Manual search verification
-- Empty-result verification
+- Text-result display
+- Image-result display
+- Image-thumbnail display
+- Image description and tag display
 - Reload behaviour
 - Enter-key search behaviour
+- Unsupported PDF handling
+- Regression verification of original text retrieval
 - Git status verification
 
-### 5.2 Excluded
+### 6.2 Excluded
 
 The following areas were outside the current final test scope:
 
@@ -146,9 +220,10 @@ The following areas were outside the current final test scope:
 - Word document parsing
 - PowerPoint parsing
 - OCR
-- Image embedding
-- Text-to-image retrieval
-- Neural semantic embeddings
+- Direct image-pixel analysis
+- CLIP or MobileCLIP embeddings
+- Image-to-image retrieval
+- Neural semantic text embeddings
 - Persistent vector-database storage
 - Cloud deployment
 - REST API testing
@@ -157,11 +232,13 @@ The following areas were outside the current final test scope:
 - Large-scale load testing
 - Formal security penetration testing
 - Formal WCAG certification
-- Production packaging and digital signing
+- Production installer packaging
+- Digital signing
+- Web local-folder retrieval
 
 ---
 
-## 6. Test Environment
+## 7. Test Environment
 
 | Item | Configuration |
 |---|---|
@@ -177,43 +254,57 @@ The following areas were outside the current final test scope:
 | Static Analysis Command | `flutter analyze` |
 | Automated Test Command | `flutter test` |
 | Desktop Execution Command | `flutter run -d windows` |
-| Test Data Directory | `data/sample_documents` |
-| Supported Test Files | `sample1.txt`, `sample2.md` |
-| Unsupported Test File | `sample3.pdf` |
+| Text Test Directory | `data/sample_documents` |
+| Image Test Directory | `data/sample_images` |
+| Supported Text Files | `sample1.txt`, `sample2.md` |
+| Unsupported File | `sample3.pdf` |
+| Supported Image Files | `car.jpg`, `cat.jpg`, `mountain.jpg`, `office.jpg`, `微信截图.png` |
+| Image Metadata File | `data/sample_images/image_metadata.json` |
 | Network Requirement | None for retrieval functionality |
 
 ---
 
-## 7. Test Evidence Files
+## 8. Test Evidence Files
 
-The following evidence files are stored in:
+The final evidence files are stored in:
 
 ```text
 docs/week8/images/
 ```
 
-Current evidence includes:
+The main evidence images include:
 
 ```text
 flutter_test_final.png
-```
-
-The following screenshots are also planned or recorded during final validation:
-
-```text
-flutter_analyze_initial.png
-flutter_test_initial.png
-flutter_test_pump_timeout.png
-flutter_test_io_timeout.png
+flutter_test_with_image_retrieval.png
+text_to_image_search_cat.png
+text_retrieval_after_image_extension.png
 windows_app_final_initial.png
 windows_app_final_search.png
-week8_project_structure.png
-git_status_before_finalisation.png
+github_week8_final.png
+```
+
+The main image-retrieval evidence is:
+
+```text
+text_to_image_search_cat.png
+```
+
+The final automated-test evidence is:
+
+```text
+flutter_test_with_image_retrieval.png
+```
+
+The original text-retrieval regression evidence is:
+
+```text
+text_retrieval_after_image_extension.png
 ```
 
 ---
 
-## 8. Static Analysis
+## 9. Static Analysis
 
 The following command was executed:
 
@@ -221,24 +312,32 @@ The following command was executed:
 flutter analyze
 ```
 
-The result was:
+The final result was:
 
 ```text
-0 errors
-0 warnings
-100 info-level lint notices
+139 issues found
 ```
 
-The analysis completed successfully without compile-blocking errors.
+All 139 reported issues were information-level lint notices.
 
-The 100 notices were mainly:
+The final analysis status was:
+
+```text
+Errors: 0
+Warnings: 0
+Information-level notices: 139
+```
+
+There were no compile-blocking static-analysis errors.
+
+The main notice categories were:
 
 ```text
 avoid_print
 avoid_relative_lib_imports
 ```
 
-### 8.1 `avoid_print`
+### 9.1 `avoid_print`
 
 This notice identifies the use of:
 
@@ -248,25 +347,41 @@ print(...)
 
 in service classes and command-line test scripts.
 
-The notices do not prevent compilation or execution.
+The current `print()` statements are used to display:
 
-For a production release, a structured logging framework would be preferred.
+- Test progress
+- Loaded file information
+- Search-result information
+- Unsupported-file messages
+- Error details
 
-### 8.2 `avoid_relative_lib_imports`
+These calls do not prevent compilation or execution.
 
-Some files under:
+A production implementation should replace them with a structured logging framework.
+
+### 9.2 `avoid_relative_lib_imports`
+
+Some scripts under:
 
 ```text
 tool/
 ```
 
-import project libraries using relative paths.
+import project libraries through relative paths.
 
-The current scripts still run, but package imports are preferred for maintainability.
+Example:
 
-### 8.3 Dependency Notices
+```dart
+import '../lib/services/image_search_service.dart';
+```
 
-The analysis also reported that some package updates were available:
+These scripts execute correctly.
+
+Package imports are recommended for future maintainability.
+
+### 9.3 Dependency Notices
+
+The analysis reported newer available versions for:
 
 ```text
 matcher
@@ -275,13 +390,189 @@ test_api
 vector_math
 ```
 
-The newer versions were incompatible with the current dependency constraints.
+The available versions were outside the current dependency constraints.
 
-No upgrade was performed during finalisation because unnecessary dependency changes could introduce compatibility risk.
+No upgrade was performed during finalisation because the current dependency set was stable and unnecessary upgrades could introduce regression risk.
 
 ---
 
-## 9. Automated Widget Testing
+## 10. Image Metadata Loading Test
+
+The image metadata was first verified using:
+
+```bash
+dart run tool/test_image_metadata.dart
+```
+
+The final output included:
+
+```text
+Total Image Documents: 5
+```
+
+The loaded image documents were:
+
+```text
+car.jpg
+cat.jpg
+mountain.jpg
+office.jpg
+微信截图.png
+```
+
+For every image, the command-line script displayed:
+
+- Filename
+- File path
+- Description
+- Tags
+- Searchable text
+
+The execution ended with:
+
+```text
+Image metadata loading test completed successfully.
+```
+
+This confirmed the following pipeline:
+
+```text
+image_metadata.json
+→ ImageMetadataService
+→ Five validated ImageDocument objects
+```
+
+---
+
+## 11. Image Search Command-Line Test
+
+The image-search service was verified using:
+
+```bash
+dart run tool/test_image_search.dart
+```
+
+The final results were:
+
+```text
+Query: vehicle road
+1. car.jpg
+Score: 0.4867
+```
+
+```text
+Query: animal pet
+1. cat.jpg
+Score: 0.4082
+```
+
+```text
+Query: mountain nature
+1. mountain.jpg
+Score: 0.4523
+```
+
+```text
+Query: office computer
+1. office.jpg
+Score: 0.6030
+```
+
+```text
+Query: video website gaming
+1. 微信截图.png
+Score: 0.5893
+```
+
+```text
+Query: completely unrelated words
+No matching images found.
+```
+
+The execution ended with:
+
+```text
+Image search test completed successfully.
+```
+
+Every planned image query returned the expected result.
+
+---
+
+## 12. Formal Automated Test Files
+
+The final automated test files are:
+
+```text
+test/image_search_service_test.dart
+test/widget_test.dart
+```
+
+The image-search test file contains:
+
+```text
+11 independent automated tests
+```
+
+The widget-test file contains:
+
+```text
+3 independent automated tests
+```
+
+The total automated test count is:
+
+```text
+14
+```
+
+---
+
+## 13. Image Metadata Automated Tests
+
+The image metadata group contains two tests.
+
+| Test ID | Test Case | Expected Result | Actual Result | Status |
+|---|---|---|---|---|
+| IT-W8-001 | Load supported image documents | Five valid image documents are loaded | Five loaded | Pass |
+| IT-W8-002 | Generate searchable image text | Description and tags are included | Searchable text generated | Pass |
+
+The searchable image text is formed from:
+
+```text
+description
++
+tags
+```
+
+Example:
+
+```text
+A domestic cat sitting indoors.
+cat animal pet indoor feline
+```
+
+---
+
+## 14. Image Retrieval Automated Tests
+
+The image retrieval group contains nine tests.
+
+| Test ID | Query or Function | Expected Result | Actual Result | Status |
+|---|---|---|---|---|
+| IT-W8-003 | `vehicle road` | `car.jpg` ranked first | `car.jpg` ranked first | Pass |
+| IT-W8-004 | `pet` | `cat.jpg` ranked first | `cat.jpg` ranked first | Pass |
+| IT-W8-005 | `mountain nature` | `mountain.jpg` ranked first | `mountain.jpg` ranked first | Pass |
+| IT-W8-006 | `office computer` | `office.jpg` ranked first | `office.jpg` ranked first | Pass |
+| IT-W8-007 | `video website gaming` | `微信截图.png` ranked first | Screenshot ranked first | Pass |
+| IT-W8-008 | Unrelated query | Empty result | Empty result returned | Pass |
+| IT-W8-009 | Empty query | Empty result | Empty result returned | Pass |
+| IT-W8-010 | Result limit | Returned result count respects limit | Limit respected | Pass |
+| IT-W8-011 | Similarity sorting | Results sorted in descending order | Correct descending order | Pass |
+
+---
+
+## 15. Widget-Test Scope
 
 The final widget-test file is:
 
@@ -295,112 +586,117 @@ Three widget tests were implemented:
 2. Empty-search-query validation
 3. Clear-button query removal
 
-The final command was:
+The startup test validates:
 
-```bash
-flutter test
-```
-
-The final result was:
-
-```text
-00:05 +3: All tests passed!
-```
-
-The output also displayed:
-
-```text
-Unsupported file type skipped: sample3.pdf
-```
-
-This is expected behaviour and confirms that unsupported PDF files are skipped without terminating the retrieval pipeline.
+- Application title
+- Loading message
+- Completion of local text and image indexing
+- Search field
+- Search button
+- Clear button
+- Document summary
+- Text chunk summary
+- Vocabulary summary
+- Text vector summary
+- Image count
+- Ready state
 
 ---
 
-## 10. Automated Test Cases
+## 16. Widget-Test Cases
 
 | Test ID | Test Case | Expected Result | Actual Result | Status |
 |---|---|---|---|---|
-| FT-W8-001 | Start the Flutter application in a widget test | Application title appears | Title displayed | Pass |
-| FT-W8-002 | Display initial loading state | Loading message appears | Loading message displayed | Pass |
-| FT-W8-003 | Complete asynchronous local indexing | Search interface appears | Search interface displayed | Pass |
-| FT-W8-004 | Render query field | One `TextField` is displayed | One field displayed | Pass |
-| FT-W8-005 | Render Search button | Search button is available | Button displayed | Pass |
-| FT-W8-006 | Render Clear button | Clear button is available | Button displayed | Pass |
-| FT-W8-007 | Render pipeline summary | Documents, chunks, vocabulary, and vectors are displayed | All summary items displayed | Pass |
-| FT-W8-008 | Render ready state | `Ready to search` appears | Ready state displayed | Pass |
-| FT-W8-009 | Submit empty query | Validation message appears | Validation message displayed | Pass |
-| FT-W8-010 | Enter query text | Query appears in text field | Query displayed | Pass |
-| FT-W8-011 | Press Clear | Query field becomes empty | Query removed | Pass |
-| FT-W8-012 | Clear search state | Ready state returns | Ready state displayed | Pass |
-| FT-W8-013 | Skip unsupported PDF | Pipeline continues without failure | PDF skipped safely | Pass |
-| FT-W8-014 | Detect rendering exception after desktop viewport configuration | No exception occurs | No rendering exception | Pass |
+| WT-W8-001 | Start application in widget test | Application title appears | Title displayed | Pass |
+| WT-W8-002 | Display initial loading state | Updated loading message appears | Message displayed | Pass |
+| WT-W8-003 | Complete asynchronous local indexing | Search interface appears | Interface displayed | Pass |
+| WT-W8-004 | Render query field | One `TextField` appears | Field displayed | Pass |
+| WT-W8-005 | Render Search button | Search button appears | Button displayed | Pass |
+| WT-W8-006 | Render Clear button | Clear button appears | Button displayed | Pass |
+| WT-W8-007 | Render pipeline summaries | Text and image counters appear | Counters displayed | Pass |
+| WT-W8-008 | Render ready state | `Ready to search` appears | Ready state displayed | Pass |
+| WT-W8-009 | Submit empty query | Validation message appears | Message displayed | Pass |
+| WT-W8-010 | Enter query text | Query appears in field | Query displayed | Pass |
+| WT-W8-011 | Press Clear | Query field becomes empty | Query removed | Pass |
+| WT-W8-012 | Return to ready state | Ready state appears | Ready state displayed | Pass |
+| WT-W8-013 | Skip unsupported PDF | Pipeline continues | PDF skipped safely | Pass |
+| WT-W8-014 | Detect rendering exception | No exception occurs | No exception | Pass |
+
+These 14 rows describe the behaviours covered by the three widget-test functions.
+
+They should not be interpreted as 14 separate widget-test functions.
 
 ---
 
-## 11. Widget-Test Implementation Strategy
+## 17. Widget-Test Implementation Strategy
 
-The application performs local file-system operations during startup.
+The application performs real local file-system operations during startup.
 
-This required special handling in widget tests.
+The final widget-test design required special handling.
 
-### 11.1 Real Asynchronous File I/O
+### 17.1 Real Asynchronous File I/O
 
-The retrieval pipeline uses:
+The startup pipeline performs:
 
 ```text
 Directory listing
-File reading
+Text-file reading
 Document parsing
+Image metadata reading
+Image-file existence validation
 ```
 
 Flutter widget tests normally use a controlled test clock.
 
-The final test implementation therefore used:
+The final implementation therefore used:
 
 ```dart
 tester.runAsync(...)
 ```
 
-This allowed real asynchronous file operations to complete.
+This allowed real asynchronous local file operations to complete.
 
-### 11.2 Bounded Waiting
+### 17.2 Bounded Waiting
 
-The final tests used a helper that repeatedly checked for a specific widget.
-
-The helper waited for:
+The tests used a bounded helper that repeatedly checked whether:
 
 ```text
 Search local content
 ```
 
-to appear.
+had appeared.
 
-This prevented unlimited waiting and produced a clear test failure when initialisation did not complete.
+This prevented unlimited waiting and produced a clear failure if indexing did not finish.
 
-### 11.3 Desktop Viewport
+### 17.3 Desktop Viewport
 
-The widget-test viewport was configured to:
+The widget-test viewport was configured as:
 
 ```text
 1280 × 900
 ```
 
-This represents a realistic desktop window and prevents artificial layout overflows caused by Flutter’s smaller default widget-test viewport.
+The device pixel ratio was configured as:
+
+```text
+1.0
+```
+
+This represents a realistic Windows desktop window and prevents artificial layout overflows caused by Flutter's smaller default widget-test viewport.
 
 ---
 
-## 12. Initial Test Failure: Obsolete Counter Test
+## 18. Initial Test Failure: Obsolete Counter Test
 
 ### Problem
 
-The original Flutter template test was:
+The original Flutter template included:
 
 ```text
 Counter increments smoke test
 ```
 
-It expected to find:
+It expected:
 
 ```text
 0
@@ -411,13 +707,13 @@ and a counter button.
 
 ### Root Cause
 
-The Week 2 counter demonstration interface had already been replaced by the Week 7 retrieval interface.
+The counter demonstration interface had already been replaced by the local retrieval interface.
 
 The old test no longer represented the actual application.
 
 ### Resolution
 
-The obsolete counter test was replaced with tests for:
+The obsolete test was replaced with tests for:
 
 - Retrieval-interface startup
 - Empty-query validation
@@ -425,11 +721,11 @@ The obsolete counter test was replaced with tests for:
 
 ### Result
 
-The obsolete test was removed successfully.
+The obsolete counter test was removed successfully.
 
 ---
 
-## 13. Second Test Failure: `pumpAndSettle()` Timeout
+## 19. Test Failure: `pumpAndSettle()` Timeout
 
 ### Problem
 
@@ -439,21 +735,19 @@ The first replacement tests used:
 pumpAndSettle()
 ```
 
-All three tests timed out.
+The tests timed out.
 
 ### Root Cause
 
-The interface displayed an animated:
+The startup interface displayed an animated:
 
 ```dart
 CircularProgressIndicator()
 ```
 
-during asynchronous indexing.
+The animation continuously scheduled frames.
 
-`pumpAndSettle()` waits for the widget tree to stop scheduling frames.
-
-The continuously animated progress indicator prevented the tree from becoming fully settled.
+`pumpAndSettle()` could not reach a completely settled state.
 
 ### Resolution
 
@@ -465,17 +759,17 @@ The animation-related timeout was removed.
 
 ---
 
-## 14. Third Test Failure: File I/O Did Not Complete
+## 20. Test Failure: Real File I/O Did Not Complete
 
 ### Problem
 
-The bounded helper still could not find:
+The bounded helper initially could not find:
 
 ```text
 Search local content
 ```
 
-after 30 attempts.
+after the maximum number of attempts.
 
 ### Root Cause
 
@@ -485,13 +779,13 @@ Repeated calls to:
 tester.pump()
 ```
 
-advance Flutter’s test frames but do not automatically complete real local file-system operations.
+advance Flutter test frames but do not automatically complete real local file-system operations.
 
-The application required directory scanning and file reading.
+The application required both text and image file access.
 
 ### Resolution
 
-The helper was changed to use:
+The helper used:
 
 ```dart
 tester.runAsync(...)
@@ -505,15 +799,15 @@ tester.pump()
 
 ### Result
 
-The real local file I/O completed and the first and third tests passed.
+The local text and image I/O completed successfully.
 
 ---
 
-## 15. Fourth Test Failure: RenderFlex Overflow
+## 21. Test Failure: RenderFlex Overflow
 
 ### Problem
 
-The empty-query validation test produced:
+The empty-query test produced:
 
 ```text
 A RenderFlex overflowed by 20 pixels on the bottom.
@@ -521,21 +815,17 @@ A RenderFlex overflowed by 20 pixels on the bottom.
 
 ### Root Cause
 
-Flutter widget tests use a relatively small default viewport.
-
-After the validation message appeared, the available height for the lower ready-state area became too small.
-
-The issue occurred in the artificial test viewport rather than the normal Windows desktop window.
+The default widget-test viewport was too small for the Windows desktop interface.
 
 ### Resolution
 
-The widget-test viewport was configured to:
+The test viewport was configured to:
 
 ```text
 1280 × 900
 ```
 
-The device pixel ratio was configured to:
+The pixel ratio was set to:
 
 ```text
 1.0
@@ -545,22 +835,130 @@ The values were reset after each test.
 
 ### Result
 
-The artificial overflow disappeared and all three tests passed.
+The artificial layout overflow was removed.
 
 ---
 
-## 16. Final Automated Test Result
+## 22. Test Failure: Updated Loading Message
 
-The final automated test summary was:
+### Problem
 
-| Metric | Result |
-|---|---:|
-| Planned widget tests | 3 |
-| Executed widget tests | 3 |
-| Passed | 3 |
-| Failed | 0 |
-| Blocked | 0 |
-| Pass rate | 100% |
+After image loading was added, the interface message changed from:
+
+```text
+Loading and indexing local documents...
+```
+
+to:
+
+```text
+Loading and indexing local documents and images...
+```
+
+The old test still expected the previous text.
+
+### Resolution
+
+The widget-test expectation was updated to the new message.
+
+### Result
+
+The loading-state test passed.
+
+---
+
+## 23. Test Failure: Updated Vector Label
+
+### Problem
+
+The earlier interface displayed:
+
+```text
+Vectors: 2
+```
+
+The new interface displayed:
+
+```text
+Text vectors: 2
+```
+
+The old widget test searched for:
+
+```text
+Vectors:
+```
+
+### Resolution
+
+The expectation was changed to:
+
+```text
+Text vectors:
+```
+
+A new expectation was added for:
+
+```text
+Images:
+```
+
+### Result
+
+The startup widget test passed.
+
+---
+
+## 24. Test Failure: Missing Image-Test File
+
+### Problem
+
+The first command for the image test reported:
+
+```text
+Does not exist
+```
+
+### Root Cause
+
+The image-search test file had not yet been created in the `test` directory.
+
+### Resolution
+
+The file was created at:
+
+```text
+test/image_search_service_test.dart
+```
+
+### Result
+
+The image tests loaded and executed normally.
+
+---
+
+## 25. Final Automated Test Result
+
+The full test command was:
+
+```bash
+flutter test
+```
+
+The final result was:
+
+```text
+00:09 +14: All tests passed!
+```
+
+The final statistics were:
+
+| Test Group | Planned | Executed | Passed | Failed | Pass Rate |
+|---|---:|---:|---:|---:|---:|
+| Image metadata tests | 2 | 2 | 2 | 0 | 100% |
+| Image retrieval tests | 9 | 9 | 9 | 0 | 100% |
+| Widget tests | 3 | 3 | 3 | 0 | 100% |
+| **Total** | **14** | **14** | **14** | **0** | **100%** |
 
 Overall automated result:
 
@@ -568,21 +966,90 @@ Overall automated result:
 PASS
 ```
 
-![Final Widget Test Result](images/flutter_test_final.png)
+![Final Automated Test Result](images/flutter_test_with_image_retrieval.png)
 
-**Figure 1.** Final Flutter widget-test execution showing three completed tests and `All tests passed!`.
+**Figure 1.** Final complete Flutter test suite showing 14 passed tests and no failures.
+
+The terminal also displayed:
+
+```text
+Unsupported file type skipped: sample3.pdf
+```
+
+This is expected behaviour.
 
 ---
 
-## 17. Windows Desktop Build Test
+## 26. Text-to-Image Functional Evidence
+
+The query:
+
+```text
+pet
+```
+
+returned:
+
+```text
+cat.jpg
+```
+
+The image result displayed:
+
+- Image thumbnail
+- Filename
+- Description
+- Tags
+- Similarity score
+- Local path
+
+![Text-to-Image Search Result](images/text_to_image_search_cat.png)
+
+**Figure 2.** Text-to-image retrieval result for the query `pet`.
+
+The result confirms:
+
+```text
+Text query
+→ Description and tag matching
+→ Image ranking
+→ Local thumbnail display
+```
+
+---
+
+## 27. Text Retrieval Regression Evidence
+
+After integrating image retrieval, the original text search was tested again.
+
+The query:
+
+```text
+metadata extraction
+```
+
+returned:
+
+```text
+sample1.txt
+sample2.md
+```
+
+![Text Retrieval Regression Result](images/text_retrieval_after_image_extension.png)
+
+**Figure 3.** Original text retrieval continuing to work after the image extension.
+
+This confirmed that the image extension did not break the original text-retrieval pipeline.
+
+---
+
+## 28. Windows Desktop Build Test
 
 The following command was executed:
 
 ```bash
 flutter run -d windows
 ```
-
-The project resolved its dependencies and successfully built the Windows application.
 
 The output included:
 
@@ -599,34 +1066,9 @@ The generated executable was:
 build/windows/x64/runner/Debug/offline_multimodal_retrieval.exe
 ```
 
-The desktop application started successfully.
+The application built and started successfully.
 
----
-
-## 18. Windows Execution Test
-
-The final Windows execution confirmed that:
-
-- The application launched.
-- The retrieval screen rendered.
-- The local sample directory was scanned.
-- Supported files were indexed.
-- Unsupported PDF files were skipped.
-- Search controls were available.
-- Search results could be displayed.
-- Empty results were handled.
-- Clear worked.
-- Reload worked.
-- Enter-key search worked.
-- The application exited normally.
-
-The terminal ended with:
-
-```text
-Application finished.
-```
-
-### Overall Windows Result
+### Overall Windows Build Result
 
 ```text
 PASS
@@ -634,32 +1076,82 @@ PASS
 
 ---
 
-## 19. Manual Functional Test Cases
+## 29. Windows Execution Test
 
-| Test ID | Function | Test Action | Expected Result | Result |
-|---|---|---|---|---|
-| MF-W8-001 | Application startup | Run Windows application | Interface opens successfully | Pass |
-| MF-W8-002 | Pipeline initialisation | Wait for startup indexing | Summary values appear | Pass |
-| MF-W8-003 | Metadata query | Search `metadata extraction` | Relevant ranked results appear | Pass |
-| MF-W8-004 | Markdown query | Search `markdown document` | Markdown result appears | Pass |
-| MF-W8-005 | Unrelated query | Search `unrelated query` | Empty-result state appears | Pass |
-| MF-W8-006 | Clear control | Enter text and press Clear | Query and results are removed | Pass |
-| MF-W8-007 | Reload control | Press Reload | Local index is rebuilt | Pass |
-| MF-W8-008 | Keyboard search | Enter query and press Enter | Search starts | Pass |
-| MF-W8-009 | Unsupported file | Include `sample3.pdf` | File is skipped safely | Pass |
-| MF-W8-010 | Normal exit | Press `q` in terminal | Application terminates normally | Pass |
+The final Windows execution confirmed that:
+
+- The application launched.
+- The retrieval screen rendered.
+- Two local text documents were indexed.
+- Five local images were loaded.
+- The unsupported PDF was skipped.
+- Text search controls were available.
+- Text results could be displayed.
+- Image results could be displayed.
+- Image thumbnails rendered.
+- Descriptions and tags rendered.
+- Empty results were handled.
+- Clear worked.
+- Reload worked.
+- Enter-key search worked.
+- The application exited normally.
+
+The final summary counters were:
+
+```text
+Documents: 2
+Text chunks: 2
+Vocabulary: 17
+Text vectors: 2
+Images: 5
+```
+
+### Overall Windows Execution Result
+
+```text
+PASS
+```
 
 ---
 
-## 20. Final Test Summary
+## 30. Manual Functional Test Cases
+
+| Test ID | Function | Test Action | Expected Result | Result |
+|---|---|---|---|---|
+| MF-W8-001 | Application startup | Run Windows application | Interface opens | Pass |
+| MF-W8-002 | Text initialisation | Wait for startup | Text counters appear | Pass |
+| MF-W8-003 | Image initialisation | Wait for startup | `Images: 5` appears | Pass |
+| MF-W8-004 | Metadata query | Search `metadata extraction` | Text results appear | Pass |
+| MF-W8-005 | Markdown query | Search `markdown document` | Markdown result appears | Pass |
+| MF-W8-006 | Cat query | Search `pet` | `cat.jpg` appears | Pass |
+| MF-W8-007 | Car query | Search `vehicle road` | `car.jpg` appears | Pass |
+| MF-W8-008 | Mountain query | Search `mountain nature` | `mountain.jpg` appears | Pass |
+| MF-W8-009 | Office query | Search `office computer` | `office.jpg` appears | Pass |
+| MF-W8-010 | Website query | Search `video website gaming` | Screenshot appears | Pass |
+| MF-W8-011 | Image thumbnail | View image result | Thumbnail renders | Pass |
+| MF-W8-012 | Image metadata | View image result | Description and tags appear | Pass |
+| MF-W8-013 | Unrelated query | Search unrelated terms | Empty-result state appears | Pass |
+| MF-W8-014 | Empty query | Press Search with empty field | Validation appears | Pass |
+| MF-W8-015 | Clear control | Enter query and press Clear | Query and results removed | Pass |
+| MF-W8-016 | Reload control | Press Reload | Text and image indexes rebuild | Pass |
+| MF-W8-017 | Keyboard search | Press Enter | Search starts | Pass |
+| MF-W8-018 | Unsupported file | Include `sample3.pdf` | PDF skipped safely | Pass |
+| MF-W8-019 | Regression check | Run text search after image extension | Original text retrieval works | Pass |
+| MF-W8-020 | Normal exit | Close application | Application exits normally | Pass |
+
+---
+
+## 31. Final Test Summary
 
 | Test Category | Passed | Failed | Result |
 |---|---:|---:|---|
-| Static analysis | Completed | No blocking errors | Pass |
+| Static analysis | Completed | 0 blocking issues | Pass |
+| Image metadata automated tests | 2 | 0 | Pass |
+| Image retrieval automated tests | 9 | 0 | Pass |
 | Widget tests | 3 | 0 | Pass |
 | Windows build | 1 | 0 | Pass |
-| Windows launch | 1 | 0 | Pass |
-| Manual functional checks | 10 | 0 | Pass |
+| Windows execution | 1 | 0 | Pass |
+| Manual functional checks | 20 | 0 | Pass |
 | Unsupported-file handling | 1 | 0 | Pass |
 
 Overall final result:
@@ -670,60 +1162,74 @@ PASS
 
 ---
 
-## 21. Defects and Resolutions
+## 32. Defects and Resolutions
 
 | Defect ID | Description | Severity | Resolution | Status |
 |---|---|---|---|---|
 | DEF-W8-001 | Default counter test no longer matched the application | Medium | Replaced with retrieval-interface tests | Closed |
 | DEF-W8-002 | `pumpAndSettle()` timed out | Medium | Added bounded widget waiting | Closed |
 | DEF-W8-003 | Real file I/O did not complete under controlled test clock | High | Added `tester.runAsync()` | Closed |
-| DEF-W8-004 | Default test viewport caused vertical overflow | Medium | Configured 1280 × 900 desktop viewport | Closed |
-| DEF-W8-005 | PDF parsing unsupported | Low | PDF safely skipped | Open limitation |
-| DEF-W8-006 | Static analysis reports 100 info notices | Low | Documented for future cleanup | Open improvement |
-| DEF-W8-007 | Four dependencies have newer incompatible versions | Low | Deferred upgrade to avoid final-stage instability | Open improvement |
+| DEF-W8-004 | Default test viewport caused vertical overflow | Medium | Configured 1280 × 900 viewport | Closed |
+| DEF-W8-005 | Updated loading text caused old test failure | Low | Updated expected text | Closed |
+| DEF-W8-006 | Updated vector label caused old test failure | Low | Updated label and added image-count check | Closed |
+| DEF-W8-007 | Image test file was initially missing | Low | Created test file in correct directory | Closed |
+| DEF-W8-008 | Sample image originally did not match metadata | Medium | Replaced image with matching cat image | Closed |
+| DEF-W8-009 | PDF parsing unsupported | Low | PDF safely skipped | Open limitation |
+| DEF-W8-010 | Static analysis reports 139 info notices | Low | Documented for future cleanup | Open improvement |
+| DEF-W8-011 | Four dependencies have newer incompatible versions | Low | Upgrade deferred | Open improvement |
+| DEF-W8-012 | Image search depends on manually prepared metadata | Medium | Documented clearly | Open limitation |
 
 ---
 
-## 22. Known Limitations
+## 33. Known Limitations
 
 The final prototype still has the following limitations:
 
 - PDF content extraction is not implemented.
-- Word document parsing is not implemented.
+- Word parsing is not implemented.
 - PowerPoint parsing is not implemented.
 - OCR is not implemented.
-- Image retrieval is not implemented.
-- Embeddings are based on term frequency.
-- Semantic synonyms are not recognised.
+- Image pixels are not analysed directly.
+- CLIP or MobileCLIP is not used.
+- Image-to-image retrieval is not implemented.
+- Image search depends on manually prepared descriptions and tags.
+- Incorrect image metadata can produce inaccurate results.
+- Text embeddings are based on term frequency.
+- Semantic synonyms are not reliably recognised.
 - Search index data is stored in memory.
-- The sample directory is fixed.
-- Users cannot select a directory from the interface.
+- The sample directories are fixed.
+- Users cannot select folders through the interface.
 - Result cards do not open source files.
 - Large-scale performance has not been evaluated.
 - Automated continuous integration has not been configured.
 - Production logging has not replaced all `print()` calls.
 - Some command-line scripts use relative imports.
 - Formal accessibility certification has not been performed.
+- A production Windows installer has not been created.
+- Web local-folder retrieval is not supported.
 
 ---
 
-## 23. Risk Assessment
+## 34. Risk Assessment
 
 | Risk ID | Risk | Impact | Likelihood | Mitigation |
 |---|---|---|---|---|
-| RISK-W8-001 | Small test dataset may hide performance problems | High | High | Add larger document collections |
-| RISK-W8-002 | Exact-term matching limits semantic retrieval | High | High | Add neural embeddings |
-| RISK-W8-003 | In-memory indexing increases startup time | Medium | High | Add persistent local vector storage |
-| RISK-W8-004 | Unsupported document formats reduce usability | High | High | Add PDF and Office parsers |
-| RISK-W8-005 | Lint notices may reduce maintainability | Medium | Medium | Replace prints and update imports |
-| RISK-W8-006 | Dependency upgrades may break compatibility | Medium | Medium | Upgrade and test in a separate branch |
-| RISK-W8-007 | Desktop-only final testing limits cross-platform confidence | Medium | Medium | Add Android, web, and additional desktop testing |
+| RISK-W8-001 | Small text dataset may hide performance problems | High | High | Add larger text collections |
+| RISK-W8-002 | Small image dataset may hide ranking problems | High | High | Add more varied images |
+| RISK-W8-003 | Exact-term matching limits semantic retrieval | High | High | Add neural embeddings |
+| RISK-W8-004 | Incorrect manual image metadata affects results | High | Medium | Validate descriptions and tags |
+| RISK-W8-005 | In-memory indexing increases startup work | Medium | High | Add persistent storage |
+| RISK-W8-006 | Unsupported formats reduce usability | High | High | Add PDF and Office parsers |
+| RISK-W8-007 | Lint notices reduce maintainability | Medium | Medium | Replace prints and imports |
+| RISK-W8-008 | Dependency upgrades may break compatibility | Medium | Medium | Test upgrades in separate branch |
+| RISK-W8-009 | Desktop-only validation limits cross-platform confidence | Medium | Medium | Add further platform testing |
+| RISK-W8-010 | No direct image understanding limits multimodal quality | High | High | Add CLIP or MobileCLIP |
 
 ---
 
-## 24. Regression Test Recommendation
+## 35. Regression Test Recommendations
 
-The following commands should be rerun after future code changes:
+The following commands should be rerun after future changes:
 
 ```bash
 flutter analyze
@@ -733,58 +1239,111 @@ flutter run -d windows
 
 The following behaviours should always be rechecked:
 
-- Startup indexing
+- Startup text indexing
+- Startup image loading
 - Unsupported-file handling
 - Search-field rendering
+- Summary counters
 - Empty-query validation
 - Clear-button behaviour
-- Ranked-result display
+- Ranked text-result display
+- Ranked image-result display
+- Image-thumbnail display
 - Empty-result display
 - Reload behaviour
-- Keyboard search
+- Enter-key search
 - Windows build
+- Text retrieval regression
+- Image retrieval regression
 
 Regression testing is especially important after:
 
 - Changing the file parser
+- Changing image metadata format
 - Changing the tokenizer
 - Changing chunk size
 - Replacing term-frequency vectors
 - Adding neural embeddings
 - Adding a persistent vector database
 - Adding PDF support
-- Adding image retrieval
-- Changing the search UI
+- Adding direct image analysis
+- Adding image-to-image retrieval
+- Changing the search interface
 
 ---
 
-## 25. Test Conclusion
+## 36. Accuracy of the Image-Retrieval Claim
+
+The image-retrieval function should be described as:
+
+> Metadata-based text-to-image retrieval using local image descriptions and tags.
+
+The system currently performs:
+
+```text
+Text query
+→ Text comparison with image descriptions and tags
+→ Ranked image result
+```
+
+The system does not currently perform:
+
+```text
+Image pixels
+→ Neural image encoder
+→ Visual-semantic embedding
+```
+
+Therefore, the project should not claim direct neural image understanding.
+
+This distinction keeps the test report accurate and technically honest.
+
+---
+
+## 37. Test Conclusion
 
 The final Week 8 test phase successfully validated the current Offline Multimodal Local Retrieval System prototype.
 
-The system completed:
+The complete test sequence included:
 
 ```text
 Static analysis
-→ Automated widget testing
-→ Local file I/O testing
-→ Windows desktop building
+→ Image metadata tests
+→ Image retrieval tests
+→ Widget tests
+→ Local file-I/O tests
+→ Windows desktop build
 → Windows desktop execution
-→ Manual retrieval verification
+→ Manual text retrieval
+→ Manual image retrieval
+→ Regression verification
 ```
 
-The final automated result was:
+The final static-analysis result was:
 
 ```text
-3 tests passed
+0 errors
+0 warnings
+139 information-level notices
+```
+
+The final automated-test result was:
+
+```text
+14 tests passed
 0 tests failed
+100% pass rate
 ```
 
 The Windows application built and launched successfully.
 
-All planned final functional checks passed.
+The original text-retrieval pipeline remained functional after the image-retrieval extension.
 
-The remaining issues are documented limitations and improvement opportunities rather than critical execution failures.
+The image-retrieval pipeline correctly loaded five local images and returned expected ranked results for the planned queries.
+
+All critical functional checks passed.
+
+The remaining issues are documented limitations and future improvements rather than critical execution failures.
 
 The overall final software-test result is:
 

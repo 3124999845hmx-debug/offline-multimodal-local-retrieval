@@ -9,10 +9,11 @@
 | Project | Offline Multimodal Local Retrieval System |
 | Document Title | Week 6 API Interface Definition |
 | Document Type | Internal Dart Service API Definition |
-| Version | 0.1 Draft |
-| Status | Draft |
+| Version | 1.0 |
+| Status | Final |
 | Author | Mingxuan Huang |
-| Date | 2026/07/27 |
+| Original Date | 2026/07/27 |
+| Final Review Date | 2026/07/30 |
 | Applicable Stage | Week 6 Embedding and Similarity Search |
 | Intended Audience | Developer, reviewer, project supervisor |
 
@@ -38,7 +39,14 @@ It describes:
 
 The interfaces described in this document are internal Dart interfaces used between application modules.
 
-This document does not define a REST, HTTP, or externally hosted web API.
+This document does not define:
+
+- A REST API
+- An HTTP API
+- An externally hosted web service
+- An OpenAPI endpoint specification
+
+The document was reviewed during Week 8 finalisation and confirmed against the completed Week 6 implementation and test evidence.
 
 ---
 
@@ -75,6 +83,10 @@ Local files
 → SimilarityResult
 ```
 
+The scope of this document is limited to the Week 6 text embedding and similarity-search architecture.
+
+The metadata-based image-retrieval interfaces added during Week 8 are outside this Week 6 API scope.
+
 ---
 
 ## 4. Interface Design Principles
@@ -90,7 +102,9 @@ The Week 6 interfaces follow these design principles:
 - Safe handling of empty input
 - Predictable descending result order
 - Clear exceptions for inconsistent vector dimensions
-- Compatibility with future Flutter UI integration
+- Compatibility with later Flutter user-interface integration
+- Deterministic local execution
+- No dependency on external AI services
 
 ---
 
@@ -116,19 +130,19 @@ The project uses the following naming conventions:
 
 | Interface ID | Interface | Category | Source File | Status |
 |---|---|---|---|---|
-| API-W6-001 | `EmbeddingVector` | Data model | `lib/models/embedding_vector.dart` | Draft |
-| API-W6-002 | `SimilarityResult` | Data model | `lib/models/similarity_result.dart` | Draft |
-| API-W6-003 | `SimpleEmbeddingService.buildVocabulary` | Service method | `lib/services/simple_embedding_service.dart` | Draft |
-| API-W6-004 | `SimpleEmbeddingService.generateEmbeddings` | Service method | `lib/services/simple_embedding_service.dart` | Draft |
-| API-W6-005 | `SimpleEmbeddingService.generateEmbedding` | Service method | `lib/services/simple_embedding_service.dart` | Draft |
-| API-W6-006 | `SimpleEmbeddingService.generateQueryVector` | Service method | `lib/services/simple_embedding_service.dart` | Draft |
-| API-W6-007 | `SimpleEmbeddingService.generateVector` | Service method | `lib/services/simple_embedding_service.dart` | Draft |
-| API-W6-008 | `SimpleEmbeddingService.tokenize` | Service method | `lib/services/simple_embedding_service.dart` | Draft |
-| API-W6-009 | `SimilaritySearchService.search` | Service method | `lib/services/similarity_search_service.dart` | Draft |
-| API-W6-010 | `SimilaritySearchService.calculateCosineSimilarity` | Service method | `lib/services/similarity_search_service.dart` | Draft |
-| API-W6-011 | `FileParserService.parseDocumentsFromDirectory` | Referenced service method | `lib/services/file_parser_service.dart` | Existing |
-| API-W6-012 | `TextProcessingService.convertToSearchableDocuments` | Referenced service method | `lib/services/text_processing_service.dart` | Existing |
-| API-W6-013 | `TextChunkingService.chunkDocuments` | Referenced service method | `lib/services/text_chunking_service.dart` | Existing |
+| API-W6-001 | `EmbeddingVector` | Data model | `lib/models/embedding_vector.dart` | Implemented and Verified |
+| API-W6-002 | `SimilarityResult` | Data model | `lib/models/similarity_result.dart` | Implemented and Verified |
+| API-W6-003 | `SimpleEmbeddingService.buildVocabulary` | Service method | `lib/services/simple_embedding_service.dart` | Implemented and Verified |
+| API-W6-004 | `SimpleEmbeddingService.generateEmbeddings` | Service method | `lib/services/simple_embedding_service.dart` | Implemented and Verified |
+| API-W6-005 | `SimpleEmbeddingService.generateEmbedding` | Service method | `lib/services/simple_embedding_service.dart` | Implemented and Verified |
+| API-W6-006 | `SimpleEmbeddingService.generateQueryVector` | Service method | `lib/services/simple_embedding_service.dart` | Implemented and Verified |
+| API-W6-007 | `SimpleEmbeddingService.generateVector` | Service method | `lib/services/simple_embedding_service.dart` | Implemented and Verified |
+| API-W6-008 | `SimpleEmbeddingService.tokenize` | Service method | `lib/services/simple_embedding_service.dart` | Implemented and Verified |
+| API-W6-009 | `SimilaritySearchService.search` | Service method | `lib/services/similarity_search_service.dart` | Implemented and Verified |
+| API-W6-010 | `SimilaritySearchService.calculateCosineSimilarity` | Service method | `lib/services/similarity_search_service.dart` | Implemented and Verified |
+| API-W6-011 | `FileParserService.parseDocumentsFromDirectory` | Referenced service method | `lib/services/file_parser_service.dart` | Existing and Verified |
+| API-W6-012 | `TextProcessingService.convertToSearchableDocuments` | Referenced service method | `lib/services/text_processing_service.dart` | Existing and Verified |
+| API-W6-013 | `TextChunkingService.chunkDocuments` | Referenced service method | `lib/services/text_chunking_service.dart` | Existing and Verified |
 
 ---
 
@@ -177,7 +191,7 @@ EmbeddingVector({
 | Property | Type | Description |
 |---|---|---|
 | `dimension` | `int` | Returns the number of vector values |
-| `isZeroVector` | `bool` | Returns true when every vector value is zero |
+| `isZeroVector` | `bool` | Returns `true` when every vector value is zero |
 
 ### Preconditions
 
@@ -187,9 +201,10 @@ EmbeddingVector({
 
 ### Postconditions
 
-- The model stores a reference to the original chunk.
+- The model stores a reference to the original text chunk.
 - `dimension` returns `values.length`.
 - `isZeroVector` reflects whether all values equal `0.0`.
+- The vector remains associated with the vocabulary used to generate it.
 
 ### Example
 
@@ -246,7 +261,7 @@ SimilarityResult({
 
 | Property | Type | Description |
 |---|---|---|
-| `sourceFileName` | `String` | Returns the matched source file name |
+| `sourceFileName` | `String` | Returns the matched source filename |
 | `sourceFilePath` | `String` | Returns the matched source file path |
 | `chunkIndex` | `int` | Returns the matched chunk index |
 | `content` | `String` | Returns the complete matched chunk content |
@@ -257,6 +272,7 @@ SimilarityResult({
 - The preview returns complete content when the content length is within the configured limit.
 - Longer content is truncated and ends with `...`.
 - The result does not modify the underlying embedding vector.
+- The similarity score is associated with one specific query execution.
 
 ### Example
 
@@ -305,11 +321,12 @@ List<String>
 - Removes duplicate terms using a set.
 - Sorts the vocabulary alphabetically.
 - Returns an empty list when no valid tokens exist.
+- Produces a deterministic vocabulary order for identical input.
 
 ### Preconditions
 
 - Each `TextChunk` should contain valid text content.
-- The list may be empty.
+- The input list may be empty.
 
 ### Postconditions
 
@@ -360,17 +377,19 @@ List<EmbeddingVector>
 - Builds a vocabulary automatically when none is supplied.
 - Generates one `EmbeddingVector` per text chunk.
 - Reuses the same vocabulary for every vector.
+- Preserves the input chunk order.
 
 ### Preconditions
 
-- Supplied vocabulary order must remain unchanged.
+- A supplied vocabulary must use a stable order.
 - Text chunks should contain processed searchable content.
 
 ### Postconditions
 
 - The number of embeddings equals the number of input chunks.
-- Every vector has the same dimension.
-- Every vector is linked to its original chunk.
+- Every generated vector has the same dimension.
+- Every generated vector is linked to its original chunk.
+- Every generated vector uses the same vocabulary.
 
 ### Example
 
@@ -415,9 +434,16 @@ EmbeddingVector
 ### Behaviour
 
 - Calls `generateVector`.
-- Stores an unmodifiable copy of the vocabulary.
-- Stores an unmodifiable copy of the vector values.
+- Stores the vocabulary used for generation.
+- Stores the generated vector values.
 - Records the generation time.
+- Associates the vector with its source text chunk.
+
+### Postconditions
+
+- The vector dimension equals the vocabulary length.
+- The vector values represent the source chunk.
+- The source chunk remains accessible through the result model.
 
 ### Example
 
@@ -464,6 +490,7 @@ List<double>
 - Uses the same vector-generation method as document text.
 - Returns a zero vector when no query term exists in the vocabulary.
 - Returns an empty list when the vocabulary is empty.
+- Preserves vocabulary order.
 
 ### Example
 
@@ -511,22 +538,26 @@ Each value is calculated as:
 
 ```text
 Term frequency =
-word occurrence count / total number of tokens
+Word occurrence count
+÷
+Total number of tokens
 ```
 
 ### Behaviour
 
-- Returns an empty list when vocabulary is empty.
+- Returns an empty list when the vocabulary is empty.
 - Returns a zero-filled vector when tokenised text is empty.
 - Counts token occurrences.
-- Divides each count by total token count.
+- Divides each count by the total token count.
 - Preserves vocabulary order.
+- Produces non-negative values.
 
 ### Postconditions
 
 - Returned vector length equals vocabulary length.
-- Values are non-negative.
-- Values are normalised by document token count.
+- Returned values are non-negative.
+- Values are normalised by the total document token count.
+- The same input and vocabulary produce the same vector.
 
 ---
 
@@ -560,8 +591,8 @@ List<String>
 
 1. Convert text to lowercase.
 2. Remove unsupported punctuation and symbols.
-3. Preserve Unicode letters and numbers.
-4. Replace multiple whitespace characters.
+3. Preserve supported letters and numbers.
+4. Replace repeated whitespace.
 5. Trim leading and trailing spaces.
 6. Split text into individual tokens.
 7. Remove empty tokens.
@@ -572,6 +603,7 @@ List<String>
 - Does not perform stemming.
 - Does not remove stop words.
 - Does not resolve synonyms.
+- Does not perform contextual semantic analysis.
 
 ---
 
@@ -619,9 +651,9 @@ List<SimilarityResult>
 - Generates a query vector.
 - Returns an empty list for a zero query vector.
 - Calculates cosine similarity against every embedding.
-- Filters scores using `minimumScore`.
+- Filters results according to the configured score threshold.
 - Sorts results from highest score to lowest score.
-- Applies `limit` when it is positive.
+- Applies `limit` when the value is positive.
 
 ### Error Behaviour
 
@@ -639,12 +671,14 @@ List<SimilarityResult>
 - All embeddings should use a shared vocabulary.
 - All embedding vectors should have equal dimensions.
 - `minimumScore` should normally be between `0.0` and `1.0`.
+- A positive `limit` should be used when result limiting is required.
 
 ### Postconditions
 
 - Returned results are sorted in descending order.
-- Returned results satisfy the score threshold.
+- Returned results satisfy the configured score threshold.
 - Returned count does not exceed a valid positive limit.
+- Each result remains linked to its source text chunk.
 
 ### Example
 
@@ -691,16 +725,17 @@ double
 
 ```text
 Cosine similarity =
-dot product /
-(magnitude of first vector × magnitude of second vector)
+Dot product
+÷
+(Magnitude of first vector × Magnitude of second vector)
 ```
 
 ### Behaviour
 
 - Throws `ArgumentError` when vector lengths differ.
 - Returns `0.0` when vectors are empty.
-- Returns `0.0` when either magnitude is zero.
-- Clamps the final score between `0.0` and `1.0`.
+- Returns `0.0` when either vector magnitude is zero.
+- Clamps the final value to the valid range used by the current non-negative vector model.
 
 ### Error Behaviour
 
@@ -709,7 +744,7 @@ dot product /
 | Different vector lengths | Throws `ArgumentError` |
 | Empty vectors | Returns `0.0` |
 | Zero magnitude | Returns `0.0` |
-| Floating-point overflow outside valid range | Clamps result |
+| Floating-point value outside the expected range | Clamps result |
 
 ### Example
 
@@ -740,6 +775,18 @@ Future<List<ParsedDocument>>
 )
 ```
 
+### Parameters
+
+| Name | Type | Required | Description |
+|---|---|---:|---|
+| `directoryPath` | `String` | Yes | Local directory containing source files |
+
+### Return Type
+
+```dart
+Future<List<ParsedDocument>>
+```
+
 ### Week 6 Usage
 
 ```dart
@@ -748,6 +795,13 @@ final parsedDocuments =
   'data/sample_documents',
 );
 ```
+
+### Behaviour
+
+- Reads supported files.
+- Returns parsed document objects.
+- Safely skips unsupported files.
+- Does not terminate the pipeline when a PDF is encountered.
 
 ---
 
@@ -766,6 +820,18 @@ List<SearchableDocument>
 )
 ```
 
+### Parameters
+
+| Name | Type | Required | Description |
+|---|---|---:|---|
+| `documents` | `List<ParsedDocument>` | Yes | Parsed documents to process |
+
+### Return Type
+
+```dart
+List<SearchableDocument>
+```
+
 ### Week 6 Usage
 
 ```dart
@@ -774,6 +840,12 @@ final searchableDocuments =
   parsedDocuments,
 );
 ```
+
+### Behaviour
+
+- Cleans and normalises document content.
+- Preserves source-document information.
+- Returns typed searchable-document objects.
 
 ---
 
@@ -792,6 +864,19 @@ List<TextChunk> chunkDocuments(
 })
 ```
 
+### Parameters
+
+| Name | Type | Required | Description |
+|---|---|---:|---|
+| `documents` | `List<SearchableDocument>` | Yes | Documents to divide |
+| `chunkSize` | `int` | Yes | Maximum target chunk size |
+
+### Return Type
+
+```dart
+List<TextChunk>
+```
+
 ### Week 6 Usage
 
 ```dart
@@ -801,6 +886,13 @@ final textChunks =
   chunkSize: 8,
 );
 ```
+
+### Behaviour
+
+- Divides searchable content into chunks.
+- Preserves source filename and path.
+- Assigns a chunk index.
+- Returns a typed list of `TextChunk` objects.
 
 ---
 
@@ -840,6 +932,9 @@ SimilarityResult
 | `generateQueryVector` | `generateVector` |
 | `search` | `EmbeddingVector`, `SimilarityResult`, `generateQueryVector` |
 | `calculateCosineSimilarity` | `dart:math` |
+| `parseDocumentsFromDirectory` | Local file system, `ParsedDocument` |
+| `convertToSearchableDocuments` | `ParsedDocument`, `SearchableDocument` |
+| `chunkDocuments` | `SearchableDocument`, `TextChunk` |
 
 ---
 
@@ -857,10 +952,13 @@ SimilarityResult
 | VAL-W6-008 | Zero vector magnitude | API-W6-010 | Returns `0.0` |
 | VAL-W6-009 | Empty tokenised text | API-W6-007 | Returns zero-filled vector |
 | VAL-W6-010 | Empty vocabulary | API-W6-007 | Returns empty vector |
+| VAL-W6-011 | Unsupported source file | API-W6-011 | Skips file and continues |
+| VAL-W6-012 | Empty document collection | API-W6-012 | Returns empty list |
+| VAL-W6-013 | Empty searchable-document collection | API-W6-013 | Returns empty list |
 
 ---
 
-## 13. Usage Example
+## 13. Complete Usage Example
 
 The complete Week 6 service sequence is:
 
@@ -901,6 +999,18 @@ final results =
 );
 ```
 
+The expected sequence is:
+
+```text
+Parse local documents
+→ Clean text
+→ Create chunks
+→ Build vocabulary
+→ Generate embeddings
+→ Execute similarity search
+→ Return ranked SimilarityResult objects
+```
+
 ---
 
 ## 14. Requirements Traceability
@@ -916,45 +1026,66 @@ final results =
 | REQ-W6-007 | Validate vector dimensions | API-W6-009 | TC-W6-006 |
 | REQ-W6-008 | Limit returned results | API-W6-009 | TC-W6-011 |
 
+The traceability identifiers should remain consistent with:
+
+```text
+docs/week6/Week6_Test_Report.md
+```
+
 ---
 
 ## 15. Versioning and Compatibility
 
-The current interface version is:
+The current interface-document version is:
 
 ```text
-0.1 Draft
+1.0 Final
 ```
 
-The Week 6 interfaces are designed for the current Dart and Flutter project structure.
+The Week 6 interfaces were implemented for the current Dart and Flutter project structure.
+
+They were later reused by the Week 7 Flutter interface and remained functional after the Week 8 image-retrieval extension.
 
 Potential future changes include:
 
-- Replacing term-frequency vectors with BERT embeddings
+- Replacing term-frequency vectors with neural text embeddings
 - Replacing in-memory vectors with persistent vector storage
 - Adding asynchronous model inference
-- Adding image embeddings
 - Adding folder selection
 - Adding an external REST interface
-- Adding OpenAPI documentation if HTTP endpoints are introduced
+- Adding OpenAPI documentation after real HTTP endpoints are implemented
 
-Future interface changes should preserve method names where possible or use a documented migration strategy.
+Future interface changes should:
+
+- Preserve method names where practical
+- Record breaking changes
+- Update test traceability
+- Update usage examples
+- Provide a migration strategy
 
 ---
 
 ## 16. Known Limitations
 
+The Week 6 interface scope has the following limitations:
+
 - Interfaces are internal Dart APIs only.
-- No HTTP endpoint is currently implemented.
-- No OpenAPI YAML file is required at this stage.
+- No HTTP endpoint is implemented.
+- No OpenAPI YAML file is required.
 - Embeddings use term-frequency vectors.
-- Semantic synonyms are not recognised.
+- Semantic synonyms are not reliably recognised.
+- Contextual language meaning is limited.
 - Vector storage is in memory.
 - PDF content extraction is not implemented.
-- Image retrieval is not implemented.
-- Performance under large datasets is not defined.
-- Thread safety and concurrent indexing are not evaluated.
+- Performance for large datasets is not defined.
+- Thread safety is not evaluated.
+- Concurrent indexing is not evaluated.
 - Automated API documentation generation is not configured.
+- Week 8 image-retrieval interfaces are not included in this Week 6 document.
+
+Image retrieval was not included in the Week 6 interface scope.
+
+A separate metadata-based image-retrieval extension was implemented later during Week 8.
 
 ---
 
@@ -967,6 +1098,7 @@ POST /index
 POST /search
 GET /documents
 GET /status
+DELETE /index
 ```
 
 For example, the internal method:
@@ -981,19 +1113,74 @@ could later be mapped to:
 POST /search
 ```
 
-However, no REST interface currently exists.
+A possible future request body could contain:
 
-An OpenAPI specification should only be added after actual HTTP endpoints are implemented.
+```json
+{
+  "query": "metadata extraction",
+  "minimumScore": 0.0,
+  "limit": 3
+}
+```
+
+However:
+
+- No REST interface currently exists.
+- No HTTP server is currently implemented.
+- No OpenAPI specification is currently required.
+
+An OpenAPI document should only be added after real HTTP endpoints are implemented.
 
 ---
 
-## 18. Completion Status
+## 18. Week 8 Relationship
 
-This document is currently marked as:
+The Week 6 API defined the text embedding and similarity-search foundation.
+
+This foundation was reused during later stages:
+
+```text
+Week 6:
+Text vectors and cosine similarity
+
+Week 7:
+Flutter desktop interface integration
+
+Week 8:
+Final testing and metadata-based image-retrieval extension
+```
+
+The Week 8 image extension added separate models and services:
+
+```text
+ImageDocument
+ImageSearchResult
+ImageMetadataService
+ImageSearchService
+```
+
+Those interfaces are outside the historical scope of this Week 6 API document.
+
+This separation preserves accurate weekly traceability.
+
+---
+
+## 19. Completion Status
+
+This document is marked as:
 
 ```text
 Version: 1.0
 Status: Final
 ```
 
-The detailed interface definitions were reviewed during Week 8 finalisation and confirmed against the completed Week 6 source code, test evidence, screenshots, and version history.
+The interface definitions were reviewed during Week 8 finalisation and confirmed against:
+
+- Completed Week 6 source code
+- Week 6 test evidence
+- Week 6 screenshots
+- Week 6 progress documentation
+- Later Flutter interface integration
+- Final project version history
+
+The document is suitable for final project submission as the internal Dart API definition for the Week 6 text embedding and similarity-search stage.

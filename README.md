@@ -1,50 +1,69 @@
 # Offline Multimodal Local Retrieval System
 
-A free, open-source, offline-first, cross-platform prototype for searching and retrieving local document content.
+A free, open-source, offline-first Flutter prototype for searching local text content and retrieving local images through metadata-based text queries.
 
-The current implementation focuses on local text retrieval using Flutter and Dart. It can parse supported local files, process and chunk their text, generate lightweight term-frequency vectors, calculate cosine similarity, and display ranked results through a Windows desktop interface.
+The validated implementation runs on Windows desktop and supports:
+
+```text
+TXT and Markdown text retrieval
++
+JPG, JPEG, and PNG metadata-based image retrieval
+```
+
+The image-search branch uses local image descriptions and tags.
+
+It does not directly analyse image pixels using CLIP, CNN, or another neural image model.
 
 ---
 
 ## 1. Project Overview
 
-The system is designed to help users search and retrieve content stored on their own devices.
+The system helps users search content stored on their own devices without uploading files to a cloud retrieval service.
 
-The long-term project vision includes support for:
+The final prototype supports two retrieval branches.
 
-- Plain-text documents
-- Markdown documents
-- PDF documents
-- Word documents
-- PowerPoint documents
-- Images
-- Screenshots
-- Scanned documents
-- Multimodal text and image retrieval
-
-The current working prototype supports local text retrieval for:
+### Text Retrieval Branch
 
 ```text
-TXT
-Markdown
+TXT and Markdown files
+→ File parsing
+→ Text processing
+→ Text chunking
+→ Term-frequency vectors
+→ Cosine similarity
+→ Ranked text results
 ```
 
-Unsupported files such as PDFs are detected and skipped safely.
+### Image Retrieval Branch
+
+```text
+JPG, JPEG, and PNG files
+→ image_metadata.json
+→ Image descriptions and tags
+→ Term-frequency vectors
+→ Cosine similarity
+→ Ranked image results
+→ Local image thumbnails
+```
+
+One user query can return both text and image results.
+
+Unsupported PDF files are detected and skipped safely.
 
 ---
 
 ## 2. Project Purpose
 
-This system is not intended to replace office software such as Microsoft 365 or WPS Office.
+The project is not intended to replace Microsoft 365, WPS Office, or a complete document-management platform.
 
 Its core purpose is:
 
 ```text
-Local content import
+Local content loading
 → Local content processing
 → Local indexing
 → Query matching
-→ Ranked result display
+→ Ranked text and image result display
 ```
 
 The project focuses on:
@@ -52,7 +71,8 @@ The project focuses on:
 - Offline-first retrieval
 - Local privacy
 - Modular architecture
-- Cross-platform Flutter development
+- Flutter Windows desktop development
+- Deterministic retrieval behaviour
 - Accessible user-interface design
 - Future multimodal extensibility
 - Open-source software delivery
@@ -61,9 +81,10 @@ The project focuses on:
 
 ## 3. Current Features
 
-The current prototype includes:
+### 3.1 Text Retrieval
 
-- Local file metadata extraction
+The text-retrieval branch includes:
+
 - TXT file parsing
 - Markdown file parsing
 - Safe unsupported-file handling
@@ -75,9 +96,31 @@ The current prototype includes:
 - Term-frequency vector generation
 - Query-vector generation
 - Cosine-similarity calculation
-- Ranked similarity-search results
-- Flutter Windows desktop interface
-- Search query input
+- Ranked text-result display
+
+### 3.2 Image Retrieval
+
+The image-retrieval branch includes:
+
+- JPG image support
+- JPEG image support
+- PNG image support
+- Local image metadata loading
+- Image-file existence validation
+- Image description and tag processing
+- Metadata-based text-to-image retrieval
+- Ranked image-result display
+- Local image-thumbnail display
+- Image filename display
+- Image description display
+- Image tag display
+- Local image-path display
+
+### 3.3 Flutter User Interface
+
+The Flutter interface includes:
+
+- Unified query field
 - Search button
 - Clear button
 - Reload button
@@ -86,95 +129,94 @@ The current prototype includes:
 - Ready state
 - Empty-query validation
 - Empty-result feedback
+- Text-result section
+- Image-result section
 - Result ranking
 - Similarity-score display
-- Source filename display
-- Chunk-index display
-- Content preview
-- Source-path display
+- Local source-path display
 - Basic accessibility semantics
-- Automated Flutter widget tests
-- Weekly progress documentation
+
+### 3.4 Testing and Documentation
+
+The project includes:
+
+- Command-line pipeline tests
+- Eleven image-related automated tests
+- Three Flutter widget tests
+- Fourteen final automated tests
+- Weekly progress reports
 - API interface documentation
 - Software test reports
 - User guide
-- System architecture documentation
+- System architecture document
+- Personal summary report
+- MIT licence
 
 ---
 
 ## 4. Current Retrieval Workflow
 
-The current application follows this pipeline:
+The final application uses one text query.
+
+```text
+User query
+├── Text retrieval
+│   ├── TXT results
+│   └── Markdown results
+└── Image retrieval
+    ├── JPG results
+    ├── JPEG results
+    └── PNG results
+```
+
+The complete workflow is:
 
 ```text
 Local files
-→ File parsing
-→ Parsed documents
-→ Text processing
-→ Searchable documents
-→ Text chunking
-→ Shared vocabulary
-→ Term-frequency vectors
-→ Query vector
-→ Cosine similarity
-→ Ranked results
-→ Flutter desktop interface
+→ Content or metadata loading
+→ Text normalisation
+→ Vector generation
+→ Cosine-similarity calculation
+→ Ranked text and image results
+→ Flutter Windows interface
 ```
 
 ---
 
-## 5. Current Technology Stack
+## 5. Technology Stack
 
 | Area | Technology |
 |---|---|
 | User Interface | Flutter |
 | Programming Language | Dart |
-| Desktop Target | Windows |
-| Local File Access | Dart file-system APIs |
+| Validated Target | Windows desktop |
+| Local File Access | `dart:io` |
 | Text Representation | Normalised term-frequency vectors |
 | Similarity Method | Cosine similarity |
+| Image Representation | Description and tags |
 | Testing | `flutter_test` |
 | Static Analysis | Flutter analyzer |
 | Version Control | Git |
 | Remote Repository | GitHub |
 | Documentation | Markdown |
 | Development Environment | Android Studio |
-| Windows Build Toolchain | Visual Studio C++ desktop tools |
+| Windows Toolchain | Visual Studio C++ desktop tools |
 
 ---
 
-## 6. Planned Technology Extensions
-
-The following technologies remain possible future directions and are not yet fully integrated:
-
-| Area | Planned Direction |
-|---|---|
-| Neural Text Embedding | BERT-based or TensorFlow Lite model |
-| Image Embedding | MobileCLIP or another lightweight image model |
-| Local Vector Storage | SQLite, Isar, Hive, or a local vector database |
-| PDF Parsing | PDFium or another local PDF parser |
-| Office Parsing | Format-specific local parsers |
-| OCR | Local optical character recognition |
-| Multimodal Search | Combined text and image retrieval |
-| Background Indexing | Local incremental indexing service |
-| Folder Selection | Native folder picker |
-| Packaging | Windows installer |
-
-These items are future work rather than completed features.
-
----
-
-## 7. Supported File Types
+## 6. Supported File Types
 
 | File Type | Extension | Current Status |
 |---|---|---|
 | Plain text | `.txt` | Supported |
 | Markdown | `.md` | Supported |
+| JPG image | `.jpg` | Supported |
+| JPEG image | `.jpeg` | Supported |
+| PNG image | `.png` | Supported |
 | PDF | `.pdf` | Detected and safely skipped |
 | Word document | `.docx` | Not implemented |
 | PowerPoint | `.pptx` | Not implemented |
-| Images | `.png`, `.jpg`, `.jpeg` | Not indexed |
-| Scanned documents | Various | OCR not implemented |
+| Scanned document | Various | OCR not implemented |
 
 When an unsupported PDF is detected, the terminal may display:
 
@@ -182,19 +224,27 @@ When an unsupported PDF is detected, the terminal may display:
 Unsupported file type skipped: sample3.pdf
 ```
 
-This is expected behaviour and does not indicate an application failure.
+This is expected behaviour and does not indicate application failure.
 
 ---
 
-## 8. Project Structure
+## 7. Project Structure
 
 ```text
 offline_multimodal_retrieval/
 ├── android/
 ├── data/
 │   ├── sample_documents/
-│   ├── sample_images/
-│   └── README.md
+│   │   ├── sample1.txt
+│   │   ├── sample2.md
+│   │   └── sample3.pdf
+│   └── sample_images/
+│       ├── car.jpg
+│       ├── cat.jpg
+│       ├── mountain.jpg
+│       ├── office.jpg
+│       ├── 微信截图.png
+│       └── image_metadata.json
 ├── docs/
 │   ├── week1/
 │   ├── week2/
@@ -206,17 +256,23 @@ offline_multimodal_retrieval/
 │   └── week8/
 ├── lib/
 │   ├── models/
+│   │   ├── image_document.dart
+│   │   ├── image_search_result.dart
+│   │   └── other text models
 │   ├── screens/
+│   │   └── search_screen.dart
 │   ├── services/
+│   │   ├── image_metadata_service.dart
+│   │   ├── image_search_service.dart
+│   │   └── other text services
 │   └── main.dart
 ├── test/
+│   ├── image_search_service_test.dart
 │   └── widget_test.dart
 ├── tool/
-│   ├── test_file_parsing.dart
-│   ├── test_keyword_search.dart
-│   ├── test_metadata_extraction.dart
-│   ├── test_ranked_search.dart
-│   └── test_similarity_search.dart
+│   ├── test_image_metadata.dart
+│   ├── test_image_search.dart
+│   └── other pipeline tests
 ├── web/
 ├── windows/
 ├── analysis_options.yaml
@@ -228,9 +284,9 @@ offline_multimodal_retrieval/
 
 ---
 
-## 9. Main Source Files
+## 8. Main Source Files
 
-### Application Entry Point
+### 8.1 Application Entry Point
 
 ```text
 lib/main.dart
@@ -240,11 +296,11 @@ Responsibilities:
 
 - Initialise Flutter
 - Configure the application theme
-- Launch the search interface
+- Launch `SearchScreen`
 - Set the application title
 - Remove the debug banner
 
-### Search Interface
+### 8.2 Search Interface
 
 ```text
 lib/screens/search_screen.dart
@@ -252,23 +308,26 @@ lib/screens/search_screen.dart
 
 Responsibilities:
 
-- Initialise retrieval services
-- Load and index local documents
-- Accept user queries
-- Run similarity search
-- Display summary statistics
-- Display ranked results
-- Handle loading and error states
+- Initialise text services
+- Initialise image services
+- Load local text documents
+- Load local image metadata
+- Build the text index
+- Execute unified searches
+- Display summary counters
+- Display text results
+- Display image results
+- Display local thumbnails
+- Handle loading and errors
 - Support keyboard interaction
-- Provide basic accessibility semantics
 
-### Data Models
+### 8.3 Text Models
 
 ```text
 lib/models/
 ```
 
-Main models include:
+The text-related models include:
 
 - `FileMetadata`
 - `ParsedDocument`
@@ -277,13 +336,29 @@ Main models include:
 - `EmbeddingVector`
 - `SimilarityResult`
 
-### Retrieval Services
+### 8.4 Image Models
 
 ```text
-lib/services/
+lib/models/image_document.dart
+lib/models/image_search_result.dart
 ```
 
-Main services include:
+`ImageDocument` stores:
+
+- Filename
+- File path
+- Description
+- Tags
+- Searchable text
+
+`ImageSearchResult` stores:
+
+- Image document
+- Similarity score
+
+### 8.5 Text Services
+
+The text services include:
 
 - `MetadataService`
 - `FileParserService`
@@ -294,11 +369,81 @@ Main services include:
 - `SimpleEmbeddingService`
 - `SimilaritySearchService`
 
+### 8.6 Image Services
+
+```text
+lib/services/image_metadata_service.dart
+lib/services/image_search_service.dart
+```
+
+`ImageMetadataService`:
+
+- Reads `image_metadata.json`
+- Validates JSON structure
+- Validates supported extensions
+- Checks that image files exist
+- Returns `ImageDocument` objects
+
+`ImageSearchService`:
+
+- Normalises queries
+- Tokenises metadata
+- Generates term-frequency vectors
+- Calculates cosine similarity
+- Ranks image results
+- Applies optional result limits
+
+---
+
+## 9. Image Metadata Format
+
+Image metadata is stored in:
+
+```text
+data/sample_images/image_metadata.json
+```
+
+Each image entry requires:
+
+```text
+fileName
+description
+tags
+```
+
+Example:
+
+```json
+{
+  "fileName": "cat.jpg",
+  "description": "A domestic cat sitting indoors.",
+  "tags": [
+    "cat",
+    "animal",
+    "pet",
+    "indoor",
+    "feline"
+  ]
+}
+```
+
+The value of `fileName` must exactly match the physical image filename.
+
+The system searches:
+
+```text
+description
++
+tags
+```
+
+Incorrect or incomplete metadata can reduce image-search quality.
+
 ---
 
 ## 10. System Requirements
 
-The final tested environment is Windows.
+The final validated environment is Microsoft Windows.
 
 Required software:
 
@@ -324,11 +469,7 @@ Verify the environment using:
 flutter doctor -v
 ```
 
-A correctly configured environment should report:
-
-```text
-No issues found!
-```
+A correctly configured environment should not report a blocking Windows desktop toolchain error.
 
 ---
 
@@ -391,24 +532,68 @@ q
 
 ---
 
-## 13. Using the Application
+## 13. Preparing Local Text Documents
 
-### 13.1 Prepare Local Documents
-
-Place supported files in:
+Place supported text files in:
 
 ```text
 data/sample_documents
 ```
 
-Supported content files are currently:
+Supported text extensions are:
 
 ```text
 .txt
 .md
 ```
 
-### 13.2 Start the Application
+Example TXT content:
+
+```text
+This document explains local metadata extraction and offline retrieval.
+```
+
+Example Markdown content:
+
+```markdown
+# Local Retrieval
+
+This document explains text chunking and cosine-similarity search.
+```
+
+After adding or editing a file, restart the application or press Reload.
+
+---
+
+## 14. Preparing Local Images
+
+Place supported image files in:
+
+```text
+data/sample_images
+```
+
+Supported image extensions are:
+
+```text
+.jpg
+.jpeg
+.png
+```
+
+Every image must also have a matching entry in:
+
+```text
+data/sample_images/image_metadata.json
+```
+
+After adding, removing, renaming, or editing images or metadata, restart the application or press Reload.
+
+---
+
+## 15. Using the Application
+
+### 15.1 Start the Application
 
 Run:
 
@@ -416,14 +601,31 @@ Run:
 flutter run -d windows
 ```
 
-The application automatically scans and indexes the local sample directory.
+During startup, the interface displays:
 
-### 13.3 Enter a Query
+```text
+Loading and indexing local documents and images...
+```
 
-Example:
+The current sample-data summary is:
+
+```text
+Documents: 2
+Text chunks: 2
+Vocabulary: 17
+Text vectors: 2
+Images: 5
+```
+
+### 15.2 Enter a Query
+
+Example queries:
 
 ```text
 metadata extraction
+pet
+vehicle road
+office computer
 ```
 
 Then either:
@@ -431,9 +633,9 @@ Then either:
 - Click `Search`, or
 - Press Enter
 
-### 13.4 Review Results
+### 15.3 Review Text Results
 
-Each result card displays:
+Text results display:
 
 - Ranking number
 - Source filename
@@ -442,7 +644,19 @@ Each result card displays:
 - Text preview
 - Local source path
 
-### 13.5 Clear a Search
+### 15.4 Review Image Results
+
+Image results display:
+
+- Ranking number
+- Local thumbnail
+- Image filename
+- Description
+- Tags
+- Cosine-similarity score
+- Local source path
+
+### 15.5 Clear a Search
 
 Click:
 
@@ -453,72 +667,134 @@ Clear
 This removes:
 
 - Current query
-- Current results
+- Current text results
+- Current image results
 - Validation messages
 
-### 13.6 Reload Local Files
+### 15.6 Reload Local Content
 
-Click the reload icon in the application bar.
+Click the Reload button.
 
 Reload performs:
 
 ```text
-Rescan local directory
-→ Reparse supported files
-→ Reprocess text
-→ Rebuild chunks
+Rescan local text files
+→ Reparse supported documents
+→ Rebuild text chunks
 → Rebuild vocabulary
-→ Regenerate vectors
+→ Regenerate text vectors
+→ Reload image metadata
+→ Revalidate image files
 ```
 
 ---
 
-## 14. Example Queries
+## 16. Example Queries
 
-### Metadata Query
+### 16.1 Text Query
 
 ```text
 metadata extraction
 ```
 
-Expected behaviour:
+Expected results:
 
-- Relevant TXT and Markdown content is returned.
-- Results are ordered by similarity score.
+```text
+sample1.txt
+sample2.md
+```
 
-### Markdown Query
+### 16.2 Markdown Query
 
 ```text
 markdown document
 ```
 
-Expected behaviour:
-
-- The Markdown sample document is returned.
-
-### Unrelated Query
+Expected result:
 
 ```text
-unrelated query
+sample2.md
 ```
 
-Expected behaviour:
+### 16.3 Cat Image Query
 
 ```text
-No similar content found
+pet
 ```
 
-### Empty Query
+Expected result:
 
-Pressing Search without entering text displays:
+```text
+cat.jpg
+```
+
+### 16.4 Car Image Query
+
+```text
+vehicle road
+```
+
+Expected result:
+
+```text
+car.jpg
+```
+
+### 16.5 Mountain Image Query
+
+```text
+mountain nature
+```
+
+Expected result:
+
+```text
+mountain.jpg
+```
+
+### 16.6 Office Image Query
+
+```text
+office computer
+```
+
+Expected result:
+
+```text
+office.jpg
+```
+
+### 16.7 Screenshot Query
+
+```text
+video website gaming
+```
+
+Expected result:
+
+```text
+微信截图.png
+```
+
+### 16.8 Empty Query
+
+Pressing Search with an empty field displays:
 
 ```text
 Please enter a search query.
 ```
 
+### 16.9 Unrelated Query
+
+An unrelated query displays:
+
+```text
+No similar content found
+```
+
 ---
 
-## 15. Similarity Model
+## 17. Similarity Model
 
 The current application uses normalised term-frequency vectors.
 
@@ -526,12 +802,12 @@ For each vocabulary term:
 
 ```text
 Term frequency =
-Number of occurrences of the term
+Number of occurrences
 ÷
 Total number of tokens
 ```
 
-The query vector and document vectors use the same shared vocabulary.
+The query vector and indexed-content vectors use the same vocabulary for each comparison.
 
 Similarity is calculated using cosine similarity:
 
@@ -542,7 +818,7 @@ Dot product
 Product of vector magnitudes
 ```
 
-The current non-negative vectors generally produce scores between:
+The current non-negative vectors normally produce scores between:
 
 ```text
 0.0 and 1.0
@@ -554,9 +830,9 @@ The score is not a probability.
 
 ---
 
-## 16. Testing
+## 18. Testing
 
-### 16.1 Static Analysis
+### 18.1 Static Analysis
 
 Run:
 
@@ -564,12 +840,12 @@ Run:
 flutter analyze
 ```
 
-The final Week 8 state recorded:
+The final recorded state was:
 
 ```text
 0 errors
 0 warnings
-100 information-level lint notices
+139 information-level notices
 ```
 
 The main notice categories were:
@@ -581,7 +857,7 @@ avoid_relative_lib_imports
 
 These notices do not prevent compilation or execution.
 
-### 16.2 Automated Widget Tests
+### 18.2 Automated Tests
 
 Run:
 
@@ -589,53 +865,74 @@ Run:
 flutter test
 ```
 
-The final Week 8 test result was:
+The final result was:
 
 ```text
-3 tests passed
-0 failed
+00:09 +14: All tests passed!
 ```
 
-The tests cover:
+The final test breakdown was:
 
-- Application startup
-- Retrieval-interface display
-- Empty-query validation
-- Clear-button behaviour
+```text
+Image metadata tests: 2
+Image retrieval tests: 9
+Flutter widget tests: 3
 
-### 16.3 Command-Line Integration Tests
+Total automated tests: 14
+Passed: 14
+Failed: 0
+Pass rate: 100%
+```
 
-Earlier service and pipeline tests are stored under:
+### 18.3 Image Command-Line Tests
+
+Run:
+
+```bash
+dart run tool/test_image_metadata.dart
+dart run tool/test_image_search.dart
+```
+
+The image metadata test validates that five supported image documents are loaded.
+
+The image search test validates planned image queries and unrelated-query handling.
+
+### 18.4 Earlier Pipeline Tests
+
+Earlier command-line scripts under:
 
 ```text
 tool/
 ```
 
-Examples:
+test:
 
-```bash
-dart run tool/test_metadata_extraction.dart
-dart run tool/test_file_parsing.dart
-dart run tool/test_keyword_search.dart
-dart run tool/test_ranked_search.dart
-dart run tool/test_similarity_search.dart
-```
+- File metadata extraction
+- File parsing
+- Keyword search
+- Ranked search
+- Text similarity search
 
 ---
 
-## 17. Final Validation Status
+## 19. Final Validation Status
 
 | Area | Status |
 |---|---|
 | Flutter environment | Passed |
 | Windows toolchain | Passed |
 | Dependency resolution | Passed |
-| Static analysis | Passed with info notices |
-| Automated widget tests | Passed |
+| Static analysis | Passed with information notices |
+| Image metadata tests | Passed |
+| Image retrieval tests | Passed |
+| Widget tests | Passed |
 | Windows build | Passed |
 | Windows launch | Passed |
-| Local indexing | Passed |
-| Ranked search | Passed |
+| Text indexing | Passed |
+| Image loading | Passed |
+| Ranked text retrieval | Passed |
+| Ranked image retrieval | Passed |
+| Image thumbnails | Passed |
 | Empty-query validation | Passed |
 | Empty-result handling | Passed |
 | Clear control | Passed |
@@ -643,7 +940,7 @@ dart run tool/test_similarity_search.dart
 | Enter-key search | Passed |
 | Unsupported-file handling | Passed |
 
-Overall current prototype result:
+Overall result:
 
 ```text
 PASS
@@ -651,7 +948,7 @@ PASS
 
 ---
 
-## 18. Documentation
+## 20. Documentation
 
 The project contains weekly and final documentation under:
 
@@ -659,187 +956,107 @@ The project contains weekly and final documentation under:
 docs/
 ```
 
-### Week 1
-
-Project onboarding and setup documentation.
-
-### Week 2
-
-Architecture and metadata-extraction development.
-
-### Week 3
-
-File parsing implementation.
-
-### Week 4
-
-Text processing and keyword search.
-
-### Week 5
-
-Text chunking and ranked search.
-
-### Week 6
-
-Embedding and cosine-similarity search.
-
-Important Week 6 documents include:
+Important final files include:
 
 ```text
-docs/week6/Week6_Progress_Report.md
-docs/week6/Week6_API_Interface_Definition.md
-docs/week6/Week6_Test_Report.md
-```
-
-### Week 7
-
-Flutter desktop search-interface integration.
-
-Important file:
-
-```text
-docs/week7/Week7_Progress_Report.md
-```
-
-### Week 8
-
-Final validation, testing, architecture, and delivery documentation.
-
-Important files:
-
-```text
-docs/week8/Final_Test_Report.md
-docs/week8/User_Guide.md
-docs/week8/System_Architecture.md
 docs/week8/Week8_Progress_Report.md
+docs/week8/Final_Test_Report.md
+docs/week8/System_Architecture.md
+docs/week8/User_Guide.md
+docs/week8/Personal_Summary_Report.md
+```
+
+Earlier weekly documentation remains under:
+
+```text
+docs/week1
+docs/week2
+docs/week3
+docs/week4
+docs/week5
+docs/week6
+docs/week7
 ```
 
 ---
 
-## 19. Development Timeline
-
-The project followed an eight-week development process.
-
-### Week 1 — Project Onboarding
-
-- Requirement definition
-- Environment setup
-- Dataset preparation
-- Risk planning
-- Flutter project validation
-
-### Week 2 — Architecture and Metadata
-
-- Modular architecture
-- File metadata model
-- Metadata extraction service
-- Initial Flutter integration
-
-### Week 3 — File Parsing
-
-- TXT parsing
-- Markdown parsing
-- Unsupported-file handling
-- Parsed-document model
-
-### Week 4 — Text Processing and Keyword Search
-
-- Text cleaning
-- Normalisation
-- Searchable-document model
-- Keyword search
-
-### Week 5 — Text Chunking and Ranked Search
-
-- Text chunking
-- Ranked keyword search
-- Search-result scoring
-- Retrieval integration
-
-### Week 6 — Embedding and Similarity Search
-
-- Shared vocabulary
-- Term-frequency vectors
-- Query vectors
-- Cosine similarity
-- Ranked similarity results
-- API interface definition
-- Software test report
-
-### Week 7 — Flutter Search Interface
-
-- Windows desktop search UI
-- Search and Clear controls
-- Reload control
-- Pipeline statistics
-- Ranked result cards
-- Accessibility semantics
-- Windows toolchain configuration
-
-### Week 8 — Finalisation
-
-- Final static analysis
-- Automated widget tests
-- Test failure diagnosis and correction
-- Windows execution validation
-- Final test report
-- User guide
-- System architecture
-- README update
-- Licence preparation
-- Final repository delivery
-
----
-
-## 20. Accessibility
+## 21. Accessibility
 
 The application includes initial accessibility support through Flutter semantics.
 
-Current accessibility features include:
+Current support includes:
 
 - Search-field semantic label
 - Search-button semantic label
 - Clear-button semantic label
 - Reload-button semantic label
 - Pipeline-summary semantic descriptions
-- Result-card semantic descriptions
-- Loading-state live region
-- Empty-result live region
+- Text-result semantic descriptions
+- Image-result semantic descriptions
 - Keyboard Enter search
 - Tooltips
+- Live-region messages
 - Automatic input focus
 
 The current prototype has not undergone formal WCAG certification.
 
 ---
 
-## 21. Privacy and Offline Behaviour
+## 22. Privacy and Offline Behaviour
 
-The retrieval pipeline operates locally.
+The core retrieval workflow operates locally.
 
 The application:
 
-- Reads local files
-- Processes text locally
-- Builds vocabulary locally
-- Generates vectors locally
+- Reads local text files
+- Reads local image files
+- Reads local image metadata
+- Processes content locally
+- Builds vectors locally
 - Calculates similarity locally
-- Stores vectors in memory
-- Does not upload document content
-- Does not require a cloud retrieval service
+- Stores index data in memory
+- Does not upload document contents
+- Does not upload image contents
+- Does not require a cloud search service
 - Does not require a remote vector database
 
 Internet access may still be needed for:
 
 - Flutter dependency installation
-- Package downloads
+- Dart package downloads
 - GitHub version control
 
-The core retrieval workflow itself is offline.
+The retrieval workflow itself is local.
 
 ---
 
-## 22. Known Limitations
+## 23. Windows and Web Behaviour
+
+The validated target is:
+
+```text
+Windows desktop
+```
+
+The application uses:
+
+```dart
+dart:io
+```
+
+for local file-system access.
+
+The same local-folder workflow is not supported in Flutter Web without architectural changes.
+
+For final testing and demonstration, use:
+
+```bash
+flutter run -d windows
+```
+
+---
+
+## 24. Known Limitations
 
 The current prototype does not yet support:
 
@@ -847,42 +1064,47 @@ The current prototype does not yet support:
 - Word document parsing
 - PowerPoint parsing
 - OCR
-- Image indexing
-- Image embeddings
-- Text-to-image retrieval
-- Neural semantic embeddings
+- Direct image-pixel understanding
+- CLIP or MobileCLIP
+- Image-to-image retrieval
+- Neural semantic text embeddings
 - Persistent vector storage
 - Incremental indexing
 - Background indexing
 - User-selected folders
-- Opening source files from result cards
+- Opening source files
 - Search history
 - Production logging
 - Automated continuous integration
 - Formal accessibility certification
 - Windows installer packaging
 - Large-scale performance validation
+- Fully supported web retrieval
+
+The current image branch depends on manually prepared descriptions and tags.
+
+Incorrect or incomplete metadata can reduce retrieval accuracy.
 
 ---
 
-## 23. Future Development
+## 25. Future Development
 
 Potential future improvements include:
 
 - Add PDF parsing.
 - Add Word and PowerPoint parsing.
 - Add OCR.
-- Add local image processing.
-- Add image embeddings.
-- Add multimodal retrieval.
-- Add BERT or TensorFlow Lite text embeddings.
+- Add neural text embeddings.
+- Add CLIP or MobileCLIP.
+- Add direct image-pixel analysis.
+- Add image-to-image retrieval.
 - Add persistent local vector storage.
 - Add hybrid keyword and semantic search.
 - Add a graphical folder picker.
 - Add file-change monitoring.
 - Add incremental indexing.
 - Add source-file opening.
-- Add search-history storage.
+- Add search history.
 - Add metadata filters.
 - Add result-type filters.
 - Add automated CI workflows.
@@ -891,11 +1113,11 @@ Potential future improvements include:
 
 ---
 
-## 24. Open-Source Status
+## 26. Open-Source Status
 
-The project is intended to be free and open source.
+The project is distributed under the MIT License.
 
-A licence file should be included in the repository root:
+The repository root contains:
 
 ```text
 LICENSE
@@ -905,62 +1127,43 @@ The licence defines the conditions under which the project may be used, modified
 
 ---
 
-## 25. Current Project Status
+## 27. Current Project Status
 
-The current project status is:
-
-```text
-Working local text-retrieval prototype
-Windows desktop interface completed
-Automated widget tests passing
-Final documentation completed
-Ready for final repository packaging
-```
-
-The current system successfully demonstrates:
+The final project status is:
 
 ```text
-Local file import
-→ Text extraction
-→ Text processing
-→ Text chunking
-→ Vector generation
-→ Similarity ranking
-→ Desktop result display
+Working Windows local retrieval prototype
+Text retrieval completed
+Metadata-based image retrieval completed
+Five local images validated
+Fourteen automated tests passing
+Final documentation updated
+Ready for final GitHub commit and push
 ```
 
 ---
 
-## 26. Summary
+## 28. Summary
 
-The Offline Multimodal Local Retrieval System is a functional Flutter desktop prototype for local document retrieval.
+The Offline Multimodal Local Retrieval System is a functional Flutter Windows desktop prototype.
 
-It currently supports:
-
-```text
-TXT and Markdown parsing
-+
-Text processing
-+
-Text chunking
-+
-Term-frequency vectors
-+
-Cosine-similarity search
-+
-Ranked Flutter results
-```
-
-The project also includes:
+It supports:
 
 ```text
-Automated tests
-Weekly reports
-API documentation
-Test documentation
-User guide
-System architecture
-Final validation evidence
+TXT and Markdown text retrieval
++
+JPG, JPEG, and PNG metadata-based image retrieval
 ```
 
-The current implementation provides a stable foundation for future semantic, persistent, and multimodal local retrieval.
+The image capability should be described accurately as:
+
+> Metadata-based text-to-image retrieval using local image descriptions and tags.
+
+The final implementation provides a stable foundation for future:
+
+- PDF and Office parsing
+- OCR
+- Neural text embeddings
+- Direct image understanding
+- Persistent vector storage
+- Larger-scale multimodal retrieval

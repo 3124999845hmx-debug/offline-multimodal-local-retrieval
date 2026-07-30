@@ -24,11 +24,11 @@ void configureDesktopTestView(WidgetTester tester) {
 /// real file-system I/O during retrieval-pipeline initialisation, so
 /// tester.runAsync() is required.
 Future<void> pumpUntilFoundWithIo(
-  WidgetTester tester,
-  Finder finder, {
-  int maximumAttempts = 30,
-  Duration interval = const Duration(milliseconds: 100),
-}) async {
+    WidgetTester tester,
+    Finder finder, {
+      int maximumAttempts = 30,
+      Duration interval = const Duration(milliseconds: 100),
+    }) async {
   for (var attempt = 0; attempt < maximumAttempts; attempt++) {
     await tester.runAsync(() async {
       await Future<void>.delayed(interval);
@@ -43,89 +43,173 @@ Future<void> pumpUntilFoundWithIo(
 
   throw TestFailure(
     'The expected widget was not found after '
-    '$maximumAttempts attempts: $finder',
+        '$maximumAttempts attempts: $finder',
   );
 }
 
 void main() {
-  testWidgets('Application starts and displays the retrieval interface', (
-    WidgetTester tester,
-  ) async {
-    configureDesktopTestView(tester);
+  testWidgets(
+    'Application starts and displays the retrieval interface',
+        (WidgetTester tester) async {
+      configureDesktopTestView(tester);
 
-    await tester.pumpWidget(const MyApp());
+      await tester.pumpWidget(const MyApp());
 
-    expect(find.text('Offline Multimodal Local Retrieval'), findsOneWidget);
+      expect(
+        find.text('Offline Multimodal Local Retrieval'),
+        findsOneWidget,
+      );
 
-    expect(
-      find.text('Loading and indexing local documents...'),
-      findsOneWidget,
-    );
+      expect(
+        find.text(
+          'Loading and indexing local documents and images...',
+        ),
+        findsOneWidget,
+      );
 
-    await pumpUntilFoundWithIo(tester, find.text('Search local content'));
+      await pumpUntilFoundWithIo(
+        tester,
+        find.text('Search local content'),
+      );
 
-    expect(find.text('Search local content'), findsOneWidget);
+      expect(
+        find.text('Search local content'),
+        findsOneWidget,
+      );
 
-    expect(find.byType(TextField), findsOneWidget);
+      expect(
+        find.byType(TextField),
+        findsOneWidget,
+      );
 
-    expect(find.widgetWithText(FilledButton, 'Search'), findsOneWidget);
+      expect(
+        find.widgetWithText(
+          FilledButton,
+          'Search',
+        ),
+        findsOneWidget,
+      );
 
-    expect(find.widgetWithText(OutlinedButton, 'Clear'), findsOneWidget);
+      expect(
+        find.widgetWithText(
+          OutlinedButton,
+          'Clear',
+        ),
+        findsOneWidget,
+      );
 
-    expect(find.textContaining('Documents'), findsOneWidget);
+      expect(
+        find.textContaining('Documents:'),
+        findsOneWidget,
+      );
 
-    expect(find.textContaining('Text chunks'), findsOneWidget);
+      expect(
+        find.textContaining('Text chunks:'),
+        findsOneWidget,
+      );
 
-    expect(find.textContaining('Vocabulary'), findsOneWidget);
+      expect(
+        find.textContaining('Vocabulary:'),
+        findsOneWidget,
+      );
 
-    expect(find.textContaining('Vectors'), findsOneWidget);
+      expect(
+        find.textContaining('Text vectors:'),
+        findsOneWidget,
+      );
 
-    expect(find.text('Ready to search'), findsOneWidget);
-  });
+      expect(
+        find.textContaining('Images:'),
+        findsOneWidget,
+      );
 
-  testWidgets('Empty search query displays a validation message', (
-    WidgetTester tester,
-  ) async {
-    configureDesktopTestView(tester);
+      expect(
+        find.text('Ready to search'),
+        findsOneWidget,
+      );
+    },
+  );
 
-    await tester.pumpWidget(const MyApp());
+  testWidgets(
+    'Empty search query displays a validation message',
+        (WidgetTester tester) async {
+      configureDesktopTestView(tester);
 
-    await pumpUntilFoundWithIo(tester, find.text('Search local content'));
+      await tester.pumpWidget(const MyApp());
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Search'));
+      await pumpUntilFoundWithIo(
+        tester,
+        find.text('Search local content'),
+      );
 
-    await tester.pump();
+      await tester.tap(
+        find.widgetWithText(
+          FilledButton,
+          'Search',
+        ),
+      );
 
-    expect(find.text('Please enter a search query.'), findsOneWidget);
+      await tester.pump();
 
-    expect(tester.takeException(), isNull);
-  });
+      expect(
+        find.text('Please enter a search query.'),
+        findsOneWidget,
+      );
 
-  testWidgets('Clear button removes the current search query', (
-    WidgetTester tester,
-  ) async {
-    configureDesktopTestView(tester);
+      expect(
+        tester.takeException(),
+        isNull,
+      );
+    },
+  );
 
-    await tester.pumpWidget(const MyApp());
+  testWidgets(
+    'Clear button removes the current search query',
+        (WidgetTester tester) async {
+      configureDesktopTestView(tester);
 
-    await pumpUntilFoundWithIo(tester, find.text('Search local content'));
+      await tester.pumpWidget(const MyApp());
 
-    final searchField = find.byType(TextField);
+      await pumpUntilFoundWithIo(
+        tester,
+        find.text('Search local content'),
+      );
 
-    await tester.enterText(searchField, 'metadata extraction');
+      final searchField = find.byType(TextField);
 
-    await tester.pump();
+      await tester.enterText(
+        searchField,
+        'metadata extraction',
+      );
 
-    expect(find.text('metadata extraction'), findsOneWidget);
+      await tester.pump();
 
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Clear'));
+      expect(
+        find.text('metadata extraction'),
+        findsOneWidget,
+      );
 
-    await tester.pump();
+      await tester.tap(
+        find.widgetWithText(
+          OutlinedButton,
+          'Clear',
+        ),
+      );
 
-    final textField = tester.widget<TextField>(searchField);
+      await tester.pump();
 
-    expect(textField.controller?.text, isEmpty);
+      final textField =
+      tester.widget<TextField>(searchField);
 
-    expect(find.text('Ready to search'), findsOneWidget);
-  });
+      expect(
+        textField.controller?.text,
+        isEmpty,
+      );
+
+      expect(
+        find.text('Ready to search'),
+        findsOneWidget,
+      );
+    },
+  );
 }

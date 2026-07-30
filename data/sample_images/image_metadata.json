@@ -1,0 +1,58 @@
+[
+  {
+    "fileName": "car.jpg",
+    "description": "A modern car parked outdoors on a road.",
+    "tags": [
+      "car",
+      "vehicle",
+      "road",
+      "transport",
+      "automobile"
+    ]
+  },
+  {
+    "fileName": "cat.jpg",
+    "description": "A domestic cat sitting indoors.",
+    "tags": [
+      "cat",
+      "animal",
+      "pet",
+      "indoor",
+      "feline"
+    ]
+  },
+  {
+    "fileName": "mountain.jpg",
+    "description": "A natural mountain landscape with sky and outdoor scenery.",
+    "tags": [
+      "mountain",
+      "nature",
+      "landscape",
+      "outdoor",
+      "sky"
+    ]
+  },
+  {
+    "fileName": "office.jpg",
+    "description": "An office workspace with a desk and computer equipment.",
+    "tags": [
+      "office",
+      "workspace",
+      "desk",
+      "computer",
+      "work"
+    ]
+  },
+  {
+    "fileName": "微信截图.png",
+    "description": "A screenshot of the Bilibili video website homepage.",
+    "tags": [
+      "bilibili",
+      "website",
+      "video",
+      "homepage",
+      "screenshot",
+      "gaming"
+    ]
+  }
+]

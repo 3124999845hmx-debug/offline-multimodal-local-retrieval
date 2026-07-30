@@ -8,11 +8,13 @@
 |---|---|
 | Project | Offline Multimodal Local Retrieval System |
 | Document Title | System Architecture |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Final |
 | Author | Mingxuan Huang |
-| Date | 2026/07/27 |
+| Original Date | 2026/07/27 |
+| Final Revision Date | 2026/07/30 |
 | Architecture Stage | Week 8 Final Architecture Review |
+| Validated Platform | Windows Desktop |
 | Intended Audience | Developer, project supervisor, evaluator, and technical reviewer |
 
 ---
@@ -28,35 +30,63 @@ It explains:
 - Core modules
 - Data models
 - Service dependencies
-- Retrieval workflow
+- Text-retrieval workflow
+- Image-retrieval workflow
+- Unified query processing
 - User-interface integration
-- File-system interaction
+- Local file-system interaction
 - Testing architecture
 - Error handling
 - Current limitations
 - Future extension points
 
-The current system is implemented as a local-first Flutter desktop prototype.
+The current system is implemented as a local-first Flutter Windows desktop prototype.
 
-It does not require a cloud retrieval server or an external database for its core search functionality.
+The system supports:
+
+```text
+TXT and Markdown text retrieval
++
+JPG, JPEG, and PNG metadata-based image retrieval
+```
+
+The core retrieval workflow runs locally.
+
+It does not require:
+
+- A cloud retrieval server
+- A remote search API
+- Cloud vector storage
+- An external database
+- Internet access during normal retrieval
 
 ---
 
 ## 3. System Objective
 
-The project aims to provide a local content retrieval system that can:
+The project aims to provide a local content-retrieval system that can:
 
 ```text
 Read local files
-→ Extract searchable text
-→ Process and divide the content
+→ Extract or load searchable information
+→ Process the information
 → Generate lightweight numerical representations
 → Compare user queries with local content
 → Rank matching results
-→ Display results through a Flutter interface
+→ Display text and image results through Flutter
 ```
 
-The longer-term objective is to support multimodal retrieval across:
+The current prototype supports two local content branches:
+
+```text
+Text branch:
+TXT and Markdown content
+
+Image branch:
+JPG, JPEG, and PNG files with local descriptions and tags
+```
+
+The longer-term objective remains broader multimodal retrieval across:
 
 - Text documents
 - PDFs
@@ -64,14 +94,57 @@ The longer-term objective is to support multimodal retrieval across:
 - Images
 - Screenshots
 - Scanned documents
+- Semantic text vectors
+- Visual image vectors
 
-The current working prototype focuses on local text retrieval.
+The current image branch does not directly analyse image pixels.
+
+Instead, it searches manually prepared local image descriptions and tags.
 
 ---
 
-## 4. Architectural Style
+## 4. Current System Capability
 
-The system uses a layered and service-oriented architecture.
+The final prototype supports one unified text query.
+
+The query is sent to two retrieval services:
+
+```text
+User text query
+├── Text retrieval branch
+└── Image retrieval branch
+```
+
+The text branch returns:
+
+- TXT results
+- Markdown results
+- Relevant text chunks
+- Similarity scores
+- Source paths
+
+The image branch returns:
+
+- JPG results
+- JPEG results
+- PNG results
+- Image thumbnails
+- Image descriptions
+- Image tags
+- Similarity scores
+- Source paths
+
+The accurate technical description of the image capability is:
+
+> Metadata-based text-to-image retrieval using local image descriptions and tags.
+
+The system does not currently perform direct neural image understanding.
+
+---
+
+## 5. Architectural Style
+
+The system uses a layered, modular, and service-oriented architecture.
 
 The main layers are:
 
@@ -81,91 +154,122 @@ Application Coordination Layer
 Retrieval Service Layer
 Data Model Layer
 Local Data Source Layer
+Testing Layer
 ```
 
-The architecture separates user-interface logic from parsing, processing, vector generation, and search logic.
+The architecture separates:
 
-This improves:
+- User-interface logic
+- Text parsing
+- Text processing
+- Text chunking
+- Text-vector generation
+- Text similarity search
+- Image metadata loading
+- Image search
+- Data models
+- Testing logic
+
+This separation improves:
 
 - Maintainability
 - Testability
 - Reusability
 - Modularity
+- Debugging
 - Future extensibility
 
 ---
 
-## 5. High-Level Architecture
+## 6. High-Level Architecture
 
 ```text
-┌──────────────────────────────────────────────┐
-│              Flutter User Interface          │
-│                                              │
-│  Search field                                │
-│  Search button                               │
-│  Clear button                                │
-│  Reload button                               │
-│  Result cards                                │
-│  Pipeline summary                            │
-└──────────────────────┬───────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────┐
-│          SearchScreen Coordination Layer      │
-│                                              │
-│  Initialises services                        │
-│  Loads local documents                       │
-│  Builds in-memory index                      │
-│  Executes user searches                      │
-│  Updates UI state                            │
-└──────────────────────┬───────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────┐
-│              Retrieval Services              │
-│                                              │
-│  FileParserService                           │
-│  TextProcessingService                       │
-│  TextChunkingService                         │
-│  SimpleEmbeddingService                      │
-│  SimilaritySearchService                     │
-└──────────────────────┬───────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────┐
-│                 Data Models                  │
-│                                              │
-│  FileMetadata                                │
-│  ParsedDocument                              │
-│  SearchableDocument                          │
-│  TextChunk                                   │
-│  EmbeddingVector                             │
-│  SimilarityResult                            │
-└──────────────────────┬───────────────────────┘
-                       │
-                       ▼
-┌──────────────────────────────────────────────┐
-│             Local File-System Data           │
-│                                              │
-│  data/sample_documents                       │
-│  TXT files                                   │
-│  Markdown files                              │
-│  Unsupported PDF safely skipped              │
-└──────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│                 Flutter Presentation Layer                │
+│                                                          │
+│  Search field                                            │
+│  Search button                                           │
+│  Clear button                                            │
+│  Reload button                                           │
+│  Pipeline summary                                        │
+│  Text-result cards                                       │
+│  Image-result cards                                      │
+│  Local image thumbnails                                  │
+└──────────────────────────┬───────────────────────────────┘
+                           │
+                           ▼
+┌──────────────────────────────────────────────────────────┐
+│              SearchScreen Coordination Layer              │
+│                                                          │
+│  Initialises text services                               │
+│  Initialises image services                              │
+│  Loads local text documents                              │
+│  Loads image metadata                                    │
+│  Builds in-memory text index                             │
+│  Stores image documents                                  │
+│  Executes one query against both branches                │
+│  Updates Flutter state                                   │
+└───────────────┬──────────────────────────┬───────────────┘
+                │                          │
+                ▼                          ▼
+┌───────────────────────────┐  ┌───────────────────────────┐
+│   Text Retrieval Branch   │  │  Image Retrieval Branch   │
+│                           │  │                           │
+│ FileParserService         │  │ ImageMetadataService      │
+│ TextProcessingService     │  │ ImageSearchService        │
+│ TextChunkingService       │  │                           │
+│ SimpleEmbeddingService    │  │ Description and tag       │
+│ SimilaritySearchService   │  │ vector generation         │
+└───────────────┬───────────┘  └───────────────┬───────────┘
+                │                              │
+                ▼                              ▼
+┌───────────────────────────┐  ┌───────────────────────────┐
+│     Text Data Models      │  │    Image Data Models      │
+│                           │  │                           │
+│ FileMetadata              │  │ ImageDocument             │
+│ ParsedDocument            │  │ ImageSearchResult         │
+│ SearchableDocument        │  │                           │
+│ TextChunk                 │  │                           │
+│ EmbeddingVector           │  │                           │
+│ SimilarityResult          │  │                           │
+└───────────────┬───────────┘  └───────────────┬───────────┘
+                │                              │
+                ▼                              ▼
+┌───────────────────────────┐  ┌───────────────────────────┐
+│  Local Text Data Source   │  │  Local Image Data Source  │
+│                           │  │                           │
+│ data/sample_documents     │  │ data/sample_images        │
+│ sample1.txt               │  │ car.jpg                   │
+│ sample2.md                │  │ cat.jpg                   │
+│ sample3.pdf skipped       │  │ mountain.jpg              │
+│                           │  │ office.jpg                │
+│                           │  │ 微信截图.png              │
+│                           │  │ image_metadata.json       │
+└───────────────────────────┘  └───────────────────────────┘
 ```
 
 ---
 
-## 6. Project Structure
+## 7. Project Structure
 
-The main project structure is:
+The final architecture-relevant project structure is:
 
 ```text
 offline_multimodal_retrieval/
 ├── android/
 ├── build/
 ├── data/
-│   └── sample_documents/
+│   ├── sample_documents/
+│   │   ├── sample1.txt
+│   │   ├── sample2.md
+│   │   └── sample3.pdf
+│   └── sample_images/
+│       ├── car.jpg
+│       ├── cat.jpg
+│       ├── mountain.jpg
+│       ├── office.jpg
+│       ├── 微信截图.png
+│       └── image_metadata.json
 ├── docs/
 │   ├── week1/
 │   ├── week2/
@@ -177,27 +281,48 @@ offline_multimodal_retrieval/
 │   └── week8/
 ├── lib/
 │   ├── models/
+│   │   ├── embedding_vector.dart
+│   │   ├── file_metadata.dart
+│   │   ├── image_document.dart
+│   │   ├── image_search_result.dart
+│   │   ├── parsed_document.dart
+│   │   ├── searchable_document.dart
+│   │   ├── similarity_result.dart
+│   │   └── text_chunk.dart
 │   ├── screens/
+│   │   └── search_screen.dart
 │   ├── services/
+│   │   ├── file_parser_service.dart
+│   │   ├── image_metadata_service.dart
+│   │   ├── image_search_service.dart
+│   │   ├── simple_embedding_service.dart
+│   │   ├── similarity_search_service.dart
+│   │   ├── text_chunking_service.dart
+│   │   └── text_processing_service.dart
 │   └── main.dart
 ├── test/
+│   ├── image_search_service_test.dart
 │   └── widget_test.dart
 ├── tool/
-├── web/
+│   ├── test_image_metadata.dart
+│   ├── test_image_search.dart
+│   └── other command-line tests
 ├── windows/
 ├── analysis_options.yaml
 ├── pubspec.lock
 ├── pubspec.yaml
-└── README.md
+├── README.md
+└── LICENSE
 ```
 
-The architecture-relevant directories are:
+The most important architecture directories are:
 
 ```text
 lib/models
 lib/services
 lib/screens
 data/sample_documents
+data/sample_images
 test
 tool
 docs
@@ -205,7 +330,7 @@ docs
 
 ---
 
-## 7. Presentation Layer
+## 8. Presentation Layer
 
 The presentation layer is implemented using Flutter.
 
@@ -216,7 +341,7 @@ lib/main.dart
 lib/screens/search_screen.dart
 ```
 
-### 7.1 Application Entry Point
+### 8.1 Application Entry Point
 
 The application starts from:
 
@@ -226,11 +351,11 @@ lib/main.dart
 
 Its responsibilities are:
 
-- Initialise Flutter bindings
+- Initialise Flutter
 - Create the root application widget
-- Configure the Material 3 theme
+- Configure Material 3
 - Remove the debug banner
-- Set `SearchScreen` as the home page
+- Set `SearchScreen` as the home screen
 
 The entry point does not directly implement retrieval logic.
 
@@ -238,9 +363,9 @@ This preserves separation of concerns.
 
 ---
 
-## 7.2 SearchScreen
+## 8.2 SearchScreen
 
-The main user interface is:
+The main interface is:
 
 ```text
 lib/screens/search_screen.dart
@@ -250,17 +375,20 @@ lib/screens/search_screen.dart
 
 - Initialisation state
 - Search state
-- Search results
+- Text search results
+- Image search results
+- Loaded image documents
+- Text embedding vectors
 - Validation messages
-- Pipeline counters
 - Error messages
+- Pipeline counters
 - Focus state
 
-The screen acts as the application coordination layer between the UI and backend retrieval services.
+It acts as the application coordination layer between the Flutter interface and the retrieval services.
 
 ---
 
-## 7.3 UI Components
+## 8.3 User-Interface Components
 
 The screen includes:
 
@@ -274,86 +402,200 @@ Pipeline summary chips
 Loading state
 Ready state
 Empty-result state
-Error state
-Ranked result list
-Result cards
+Initialisation-error state
+Text-result section
+Image-result section
+Text-result cards
+Image-result cards
+Image thumbnails
 ```
 
-Each result card displays:
+The pipeline summary displays:
 
 ```text
-Ranking
-Source filename
-Chunk index
-Similarity score
-Preview
-Source path
+Documents
+Text chunks
+Vocabulary
+Text vectors
+Images
 ```
 
 ---
 
-## 8. Application Coordination Layer
+## 8.4 Text Result Card
 
-The coordination logic is located inside `SearchScreen`.
+Each text-result card displays:
 
-The main startup method is:
+```text
+Ranking number
+Source filename
+Chunk index
+Cosine-similarity score
+Content preview
+Source file path
+```
+
+The text result is represented by:
+
+```text
+SimilarityResult
+```
+
+---
+
+## 8.5 Image Result Card
+
+Each image-result card displays:
+
+```text
+Ranking number
+Image thumbnail
+Image filename
+Description
+Tags
+Cosine-similarity score
+Local file path
+```
+
+The thumbnail is displayed using:
+
+```dart
+Image.file(...)
+```
+
+If the image cannot be rendered, the interface displays a broken-image placeholder.
+
+The layout uses:
+
+```dart
+LayoutBuilder
+```
+
+to adapt the image card to the available width.
+
+A wide desktop window uses a horizontal layout.
+
+A narrow window uses a vertical layout.
+
+---
+
+## 9. Application Coordination Layer
+
+The application coordination logic is located inside `SearchScreen`.
+
+The main methods are:
 
 ```dart
 _initialiseRetrievalPipeline()
-```
-
-The main search method is:
-
-```dart
 _runSearch()
-```
-
-The main reset method is:
-
-```dart
 _clearSearch()
 ```
 
-### 8.1 Startup Responsibilities
+---
 
-During startup, the screen performs:
+## 9.1 Startup Responsibilities
+
+During startup, the screen performs two parallel logical preparation processes.
+
+### Text Preparation
 
 ```text
-Parse local files
-→ Convert documents
+Parse text files
+→ Convert parsed documents
 → Generate text chunks
-→ Build vocabulary
-→ Generate vectors
-→ Update UI counters
+→ Build text vocabulary
+→ Generate text vectors
 ```
 
-### 8.2 Search Responsibilities
+### Image Preparation
 
-During search, the screen performs:
+```text
+Read image_metadata.json
+→ Validate image extensions
+→ Validate image existence
+→ Create ImageDocument objects
+```
+
+The resulting state includes:
+
+```dart
+List<EmbeddingVector> _embeddingVectors;
+List<ImageDocument> _imageDocuments;
+```
+
+---
+
+## 9.2 Search Responsibilities
+
+During a search, the screen performs:
 
 ```text
 Validate query
 → Set searching state
-→ Call SimilaritySearchService
-→ Store ranked results
-→ Update result UI
+→ Search text branch
+→ Search image branch
+→ Store both result lists
+→ Update Flutter interface
 ```
 
-### 8.3 State Management
+The query is sent to:
 
-The current prototype uses local Flutter widget state.
+```text
+SimilaritySearchService
++
+ImageSearchService
+```
 
-Examples include:
+The results are stored as:
+
+```dart
+List<SimilarityResult> _textSearchResults;
+List<ImageSearchResult> _imageSearchResults;
+```
+
+---
+
+## 9.3 Reset Responsibilities
+
+The Clear function removes:
+
+```text
+Search field content
+Text search results
+Image search results
+Search errors
+Search-completed state
+```
+
+The Reload function rebuilds:
+
+```text
+Text index
++
+Image metadata collection
+```
+
+---
+
+## 9.4 State Management
+
+The prototype uses local Flutter widget state.
+
+Important state values include:
 
 ```dart
 bool _isInitialising;
 bool _isSearching;
 bool _hasSearched;
+
 List<EmbeddingVector> _embeddingVectors;
-List<SimilarityResult> _searchResults;
+List<SimilarityResult> _textSearchResults;
+
+List<ImageDocument> _imageDocuments;
+List<ImageSearchResult> _imageSearchResults;
 ```
 
-No external state-management framework is currently required because the application scope is small.
+An external state-management framework is not required for the current project size.
 
 Future versions may use:
 
@@ -362,15 +604,17 @@ Future versions may use:
 - Bloc
 - Redux
 
-if the application becomes more complex.
+if the application grows.
 
 ---
 
-## 9. Data Model Layer
+## 10. Data Model Layer
 
-The model layer defines structured data transferred between services.
+The model layer defines typed data transferred between services.
 
-The main models are:
+The final models are divided into text and image groups.
+
+### Text Models
 
 ```text
 FileMetadata
@@ -381,28 +625,35 @@ EmbeddingVector
 SimilarityResult
 ```
 
+### Image Models
+
+```text
+ImageDocument
+ImageSearchResult
+```
+
 ---
 
-## 9.1 FileMetadata
+## 10.1 FileMetadata
 
-`FileMetadata` represents basic local file information.
+`FileMetadata` stores basic local file information.
 
 Typical fields include:
 
-- File name
+- Filename
 - File path
 - File extension
 - File size
 - Creation time
 - Modification time
 
-This model supports local file identification before content parsing.
+This model identifies a local file before its content is parsed.
 
 ---
 
-## 9.2 ParsedDocument
+## 10.2 ParsedDocument
 
-`ParsedDocument` represents content extracted from a supported local file.
+`ParsedDocument` represents text extracted from a supported local file.
 
 It links:
 
@@ -412,13 +663,13 @@ File metadata
 Parsed text content
 ```
 
-This model acts as the output of the file-parsing layer.
+It is the output of `FileParserService`.
 
 ---
 
-## 9.3 SearchableDocument
+## 10.3 SearchableDocument
 
-`SearchableDocument` represents cleaned and normalised document content.
+`SearchableDocument` represents cleaned and normalised text.
 
 It is produced after text processing.
 
@@ -427,29 +678,28 @@ Typical transformations include:
 - Lowercase conversion
 - Whitespace normalisation
 - Removal of unsupported symbols
-- Preservation of searchable text
+- Preparation for chunking
 
 ---
 
-## 9.4 TextChunk
+## 10.4 TextChunk
 
-`TextChunk` represents a smaller section of a searchable document.
+`TextChunk` represents a smaller document section.
 
 Typical fields include:
 
 - Source filename
-- Source path
+- Source file path
 - Chunk index
 - Chunk content
-- Word range or chunk metadata
 
-Text chunking improves retrieval granularity.
+Text chunking improves retrieval precision.
 
-Instead of ranking only complete files, the system can rank smaller content sections.
+Instead of returning only a complete file, the system can return a relevant section.
 
 ---
 
-## 9.5 EmbeddingVector
+## 10.5 EmbeddingVector
 
 `EmbeddingVector` represents one text chunk numerically.
 
@@ -457,7 +707,7 @@ It contains:
 
 ```text
 TextChunk
-Shared vocabulary
+Vocabulary
 Vector values
 Generation time
 ```
@@ -468,9 +718,9 @@ Each vector dimension corresponds to one vocabulary term.
 
 ---
 
-## 9.6 SimilarityResult
+## 10.6 SimilarityResult
 
-`SimilarityResult` represents one ranked search result.
+`SimilarityResult` represents one ranked text result.
 
 It contains:
 
@@ -481,7 +731,7 @@ Similarity score
 Search time
 ```
 
-It also provides convenient access to:
+It provides access to:
 
 - Source filename
 - Source path
@@ -491,11 +741,90 @@ It also provides convenient access to:
 
 ---
 
-## 10. Retrieval Service Layer
+## 10.7 ImageDocument
 
-The retrieval service layer contains the main functional modules.
+`ImageDocument` represents one locally searchable image.
 
-The services are:
+The model stores:
+
+```text
+Filename
+File path
+Description
+Tags
+Searchable text
+```
+
+The model is created from one JSON object.
+
+Example:
+
+```json
+{
+  "fileName": "cat.jpg",
+  "description": "A domestic cat sitting indoors.",
+  "tags": [
+    "cat",
+    "animal",
+    "pet",
+    "indoor",
+    "feline"
+  ]
+}
+```
+
+The model combines:
+
+```text
+Description
++
+Tags
+```
+
+into:
+
+```text
+searchableText
+```
+
+Example:
+
+```text
+A domestic cat sitting indoors.
+cat animal pet indoor feline
+```
+
+---
+
+## 10.8 ImageSearchResult
+
+`ImageSearchResult` represents one ranked image result.
+
+It stores:
+
+```text
+ImageDocument
++
+Similarity score
+```
+
+It provides direct access to:
+
+- Filename
+- File path
+- Description
+- Tags
+- Similarity score
+
+The score is not stored permanently inside `ImageDocument` because it changes for every query.
+
+---
+
+## 11. Retrieval Service Layer
+
+The final retrieval service layer includes:
+
+### Text Services
 
 ```text
 FileParserService
@@ -505,18 +834,25 @@ SimpleEmbeddingService
 SimilaritySearchService
 ```
 
+### Image Services
+
+```text
+ImageMetadataService
+ImageSearchService
+```
+
 Each service has a focused responsibility.
 
 ---
 
-## 10.1 FileParserService
+## 11.1 FileParserService
 
-The file parser reads supported local files.
+The file parser reads supported local text files.
 
 Main responsibility:
 
 ```text
-Local file
+Local text file
 → ParsedDocument
 ```
 
@@ -529,17 +865,17 @@ Supported formats:
 
 Unsupported formats are skipped safely.
 
-Example message:
+Example:
 
 ```text
 Unsupported file type skipped: sample3.pdf
 ```
 
-The parser prevents one unsupported file from terminating the full indexing pipeline.
+One unsupported file does not terminate the whole pipeline.
 
 ---
 
-## 10.2 TextProcessingService
+## 11.2 TextProcessingService
 
 The text-processing service converts parsed documents into searchable documents.
 
@@ -550,18 +886,18 @@ ParsedDocument
 → SearchableDocument
 ```
 
-Typical tasks include:
+Its tasks include:
 
 - Lowercase conversion
 - Whitespace cleaning
 - Content normalisation
-- Preparation for chunking and tokenisation
+- Preparation for tokenisation
 
 ---
 
-## 10.3 TextChunkingService
+## 11.3 TextChunkingService
 
-The chunking service divides searchable documents into smaller units.
+The chunking service divides searchable documents into smaller text units.
 
 Main responsibility:
 
@@ -570,35 +906,37 @@ SearchableDocument
 → List<TextChunk>
 ```
 
-The chunk size is configurable.
-
-Week 6 used a small chunk size for demonstration.
-
-Week 7 used:
+The current interface uses:
 
 ```dart
 chunkSize: 40
 ```
 
-This produced one chunk for each short sample document.
+Because the sample documents are short, each currently produces one text chunk.
 
 ---
 
-## 10.4 SimpleEmbeddingService
+## 11.4 SimpleEmbeddingService
 
-The embedding service converts text into numerical vectors.
+The embedding service converts text chunks and queries into numerical vectors.
 
 Main responsibilities:
 
 ```text
 Build vocabulary
-Generate document vectors
-Generate query vectors
 Tokenise text
+Generate text vectors
+Generate query vectors
 Normalise term frequencies
 ```
 
-The current model is deterministic and lightweight.
+The current implementation is:
+
+- Lightweight
+- Deterministic
+- Offline
+- Inspectable
+- Easy to test
 
 It does not require:
 
@@ -609,9 +947,9 @@ It does not require:
 
 ---
 
-## 10.5 SimilaritySearchService
+## 11.5 SimilaritySearchService
 
-The similarity-search service compares a query vector with indexed text vectors.
+The text similarity-search service compares the user query with indexed text vectors.
 
 Main responsibilities:
 
@@ -619,24 +957,86 @@ Main responsibilities:
 Validate query
 Generate query vector
 Calculate cosine similarity
-Filter zero or low scores
+Filter zero scores
 Sort results
 Apply result limit
 Return SimilarityResult objects
 ```
 
-The service returns results in descending score order.
+Results are returned in descending score order.
 
 ---
 
-## 11. Retrieval Pipeline
+## 11.6 ImageMetadataService
 
-The complete retrieval pipeline is:
+The image metadata service loads local image metadata.
+
+Main responsibilities:
+
+```text
+Locate image_metadata.json
+→ Read JSON
+→ Decode JSON array
+→ Convert entries to ImageDocument
+→ Validate extensions
+→ Check image files exist
+→ Skip invalid entries
+→ Return image list
+```
+
+Supported image formats are:
+
+```text
+.jpg
+.jpeg
+.png
+```
+
+The service currently loads five images.
+
+---
+
+## 11.7 ImageSearchService
+
+The image-search service compares a text query with each image's searchable metadata.
+
+Main responsibilities:
+
+```text
+Normalise query
+Tokenise query
+Build shared vocabulary
+Generate query vector
+Generate image metadata vectors
+Calculate cosine similarity
+Filter results
+Sort descending
+Apply result limit
+Return ImageSearchResult objects
+```
+
+The image branch uses:
+
+```text
+description
++
+tags
+```
+
+as the searchable representation.
+
+It does not directly inspect image pixels.
+
+---
+
+## 12. Text Retrieval Pipeline
+
+The complete text pipeline is:
 
 ```text
 1. Application starts
 2. SearchScreen initialises
-3. FileParserService scans local directory
+3. FileParserService scans data/sample_documents
 4. Supported files become ParsedDocument objects
 5. TextProcessingService creates SearchableDocument objects
 6. TextChunkingService creates TextChunk objects
@@ -647,63 +1047,120 @@ The complete retrieval pipeline is:
 11. Query becomes a vector using the same vocabulary
 12. SimilaritySearchService calculates cosine similarity
 13. Positive results are ranked
-14. SearchScreen displays result cards
+14. SearchScreen displays text-result cards
 ```
 
 ---
 
-## 12. Vocabulary Architecture
+## 13. Image Retrieval Pipeline
 
-The vocabulary is built from all indexed text chunks.
+The complete image pipeline is:
+
+```text
+1. Application starts
+2. SearchScreen calls ImageMetadataService
+3. image_metadata.json is loaded
+4. JSON entries become ImageDocument objects
+5. File extensions are validated
+6. Local image files are checked
+7. Valid images are stored in memory
+8. User enters a text query
+9. ImageSearchService normalises the query
+10. Description and tags become searchable text
+11. Query and image metadata become term-frequency vectors
+12. Cosine similarity is calculated
+13. Positive image results are ranked
+14. SearchScreen displays image-result cards
+15. Image.file displays the local thumbnail
+```
+
+---
+
+## 14. Unified Search Pipeline
+
+The final application uses one query field.
+
+The unified search sequence is:
+
+```text
+User enters query
+→ Validate query
+→ Set loading state
+→ Run text search
+→ Run image search
+→ Store text results
+→ Store image results
+→ Display both sections
+```
+
+The output structure is:
+
+```text
+Search results
+├── Text results
+│   ├── TXT result cards
+│   └── Markdown result cards
+└── Image results
+    ├── JPG result cards
+    └── PNG result cards
+```
+
+If both lists are empty, the interface displays:
+
+```text
+No similar content found
+```
+
+---
+
+## 15. Vocabulary Architecture
+
+The text branch builds a shared vocabulary from all text chunks.
+
+The image branch builds a shared vocabulary from:
+
+```text
+Current query
++
+All image descriptions
++
+All image tags
+```
+
+In both branches, vocabulary order determines vector dimensions.
 
 Example:
 
 ```text
-document
-extraction
-file
-markdown
-metadata
-sample
-search
-text
+Vocabulary:
+[animal, cat, office, pet]
 ```
 
-The vocabulary order determines vector dimensions.
-
-For example:
+Query:
 
 ```text
-Vocabulary:
-[document, extraction, file, metadata]
-
-Text:
-metadata extraction
+pet
 ```
 
 may produce:
 
 ```text
-[0.0, 0.5, 0.0, 0.5]
+[0.0, 0.0, 0.0, 1.0]
 ```
 
-The same vocabulary must be used for:
-
-- Document vectors
-- Query vectors
-- Similarity calculation
+The same vocabulary must be used for both vectors being compared.
 
 ---
 
-## 13. Term-Frequency Vector Architecture
+## 16. Term-Frequency Vector Architecture
 
-The current system uses normalised term frequency.
+The system uses normalised term frequency.
 
 For each term:
 
 ```text
 Term frequency =
-Number of occurrences of the term
+Number of occurrences
 ÷
 Total number of tokens
 ```
@@ -712,20 +1169,21 @@ Example:
 
 ```text
 Text:
-metadata extraction metadata
+cat animal pet pet
 ```
 
 Total tokens:
 
 ```text
-3
+4
 ```
 
 Term frequencies:
 
 ```text
-metadata = 2 / 3
-extraction = 1 / 3
+cat = 1 / 4
+animal = 1 / 4
+pet = 2 / 4
 ```
 
 Advantages:
@@ -739,18 +1197,19 @@ Advantages:
 
 Limitations:
 
-- No synonym understanding
+- No reliable synonym understanding
 - Limited semantic meaning
 - No contextual understanding
-- Vocabulary-dependent matching
+- Strong dependence on exact words
+- Image quality depends on metadata quality
 
 ---
 
-## 14. Cosine-Similarity Architecture
+## 17. Cosine-Similarity Architecture
 
 Cosine similarity compares the direction of two vectors.
 
-The service calculates:
+The system calculates:
 
 ```text
 Cosine similarity =
@@ -759,7 +1218,7 @@ Dot product
 Product of vector magnitudes
 ```
 
-The current non-negative vectors normally produce values between:
+The current non-negative vectors usually produce values between:
 
 ```text
 0.0 and 1.0
@@ -768,77 +1227,91 @@ The current non-negative vectors normally produce values between:
 Interpretation:
 
 ```text
-1.0
-→ Very strong overlap
+Higher score
+→ Stronger term overlap
 
-Positive middle value
+Middle score
 → Partial overlap
 
 0.0
-→ No shared vocabulary
+→ No shared searchable terms
 ```
 
 The score is not a probability.
 
+The same principle is used for:
+
+- Text query versus text chunk
+- Text query versus image metadata
+
 ---
 
-## 15. Result Ranking
+## 18. Result Ranking
 
-The search service:
+Both retrieval services perform:
 
 ```text
-Calculates all scores
-→ Filters results
-→ Sorts descending
-→ Applies optional limit
+Calculate scores
+→ Filter results
+→ Sort descending
+→ Apply optional limit
 ```
 
 Example:
 
 ```text
-Result 1: 0.6325
-Result 2: 0.5000
-Result 3: 0.2500
+Result 1: 0.6030
+Result 2: 0.3015
+Result 3: 0.2041
 ```
 
-The UI receives already ranked `SimilarityResult` objects.
+The Flutter layer receives already ranked objects.
 
 This keeps ranking logic outside the presentation layer.
 
 ---
 
-## 16. Local Storage Architecture
+## 19. Local Storage Architecture
 
-The current system reads files from:
+The current text files are stored in:
 
 ```text
 data/sample_documents
 ```
 
-The index is stored only in application memory.
+The current images and image metadata are stored in:
 
-Current storage behaviour:
+```text
+data/sample_images
+```
+
+The text index and image objects are stored in application memory.
+
+Current behaviour:
 
 ```text
 Application starts
-→ Index generated
-→ Vectors stored in memory
+→ Text index generated
+→ Image metadata loaded
+→ Data stored in memory
 → Application closes
-→ Index is discarded
+→ In-memory state is discarded
 ```
 
 Advantages:
 
 - Simple
 - No database setup
-- Easy demonstration
-- Strong local privacy
+- Easy to demonstrate
+- Fully local
+- Strong privacy
 
 Limitations:
 
-- Index rebuilt on every startup
-- No large-scale persistence
-- No cached vectors
+- Index rebuilt every startup
+- Image metadata reloaded every startup
+- No persistent vectors
+- No cached index
 - No search history
 
 Future options include:
@@ -846,91 +1319,128 @@ Future options include:
 - SQLite
 - Isar
 - Hive
-- Local vector database
 - Serialized vector files
+- Local vector database
 
 ---
 
-## 17. Offline-First Architecture
+## 20. Offline-First Architecture
 
 The core retrieval workflow is local.
 
 The system:
 
-- Reads local files
+- Reads local text files
+- Reads local image metadata
+- Checks local image files
 - Processes text locally
-- Builds vocabulary locally
+- Builds vocabularies locally
 - Generates vectors locally
 - Calculates similarity locally
-- Displays results locally
+- Displays local results
 
-No document content is uploaded during retrieval.
+No text content, image metadata, or image file is uploaded during retrieval.
 
 Internet access may still be required for:
 
-- Initial dependency installation
-- Flutter package downloads
+- Flutter dependency installation
+- Dart package downloads
 - GitHub source control
 
-The retrieval process itself does not require internet access.
+Normal search operation does not require internet access.
 
 ---
 
-## 18. Error-Handling Architecture
+## 21. Error-Handling Architecture
 
 The architecture includes several error-handling strategies.
 
-### 18.1 Unsupported File Handling
+### 21.1 Unsupported Text File
 
-Unsupported files are skipped.
+Unsupported text files are skipped.
 
-The rest of the directory continues processing.
+Example:
 
-### 18.2 Empty Query Handling
+```text
+Unsupported file type skipped: sample3.pdf
+```
 
-An empty query produces:
+### 21.2 Missing Image Metadata File
+
+If `image_metadata.json` does not exist, the service throws a clear file-system exception.
+
+### 21.3 Invalid JSON Root
+
+The JSON root must be an array.
+
+Otherwise, the service throws a `FormatException`.
+
+### 21.4 Unsupported Image Type
+
+Files outside:
+
+```text
+.jpg
+.jpeg
+.png
+```
+
+are skipped.
+
+### 21.5 Missing Image File
+
+If metadata references a missing image, the entry is skipped.
+
+### 21.6 Empty Query
+
+An empty query displays:
 
 ```text
 Please enter a search query.
 ```
 
-No search is executed.
+### 21.7 Zero Query Vector
 
-### 18.3 Zero Query Vector
-
-When no query term exists in the vocabulary:
+If no query term exists in a searchable vocabulary:
 
 ```text
 Query vector = all zeros
 ```
 
-The search service returns an empty result list.
+The service returns an empty list.
 
-### 18.4 Empty Result Handling
+### 21.8 Empty Result
 
-The UI displays:
+If both result lists are empty, the interface displays:
 
 ```text
 No similar content found
 ```
 
-### 18.5 Initialisation Error
+### 21.9 Initialisation Error
 
-If startup indexing fails, the interface displays an error state and a retry button.
+If startup loading fails, the interface displays:
 
-### 18.6 Vector Validation
+- An error message
+- A retry button
 
-The similarity service validates vector dimensions.
+### 21.10 Image Rendering Error
 
-Inconsistent dimensions produce an explicit exception rather than an incorrect score.
+If an image thumbnail cannot be rendered, the result card displays a broken-image icon.
+
+### 21.11 Vector Validation
+
+The similarity services validate vector dimensions.
+
+Invalid dimensions produce an explicit exception.
 
 ---
 
-## 19. Accessibility Architecture
+## 22. Accessibility Architecture
 
-The UI includes initial accessibility support.
+The interface includes initial accessibility support through Flutter `Semantics`.
 
-The architecture uses Flutter `Semantics` for:
+Semantic support is applied to:
 
 - Search field
 - Search button
@@ -939,21 +1449,23 @@ The architecture uses Flutter `Semantics` for:
 - Loading state
 - Empty-result state
 - Summary chips
-- Result list
+- Text results
+- Image results
 - Result cards
 
 Additional support includes:
 
 - Tooltips
 - Enter-key search
-- Automatic focus
+- Automatic search-field focus
 - Live-region messages
+- Selectable local paths
 
-The current implementation is not a formal WCAG-certified product.
+The implementation is not a formally certified WCAG product.
 
 ---
 
-## 20. Keyboard Interaction Architecture
+## 23. Keyboard Interaction Architecture
 
 Keyboard input is handled using:
 
@@ -963,13 +1475,13 @@ Actions
 Intent
 ```
 
-A custom search intent maps the Enter key to:
+A custom intent maps Enter to:
 
 ```dart
 _runSearch()
 ```
 
-The `TextField` also supports:
+The search field also uses:
 
 ```dart
 onSubmitted
@@ -979,19 +1491,19 @@ This provides redundant keyboard activation.
 
 ---
 
-## 21. Testing Architecture
+## 24. Testing Architecture
 
-The project contains two main testing approaches.
+The project contains three main testing approaches.
 
-### 21.1 Command-Line Integration Tests
+### 24.1 Command-Line Pipeline Tests
 
-Files under:
+Scripts under:
 
 ```text
 tool/
 ```
 
-test earlier pipeline stages.
+test individual pipeline stages.
 
 Examples include:
 
@@ -1001,32 +1513,73 @@ test_file_parsing.dart
 test_keyword_search.dart
 test_ranked_search.dart
 test_similarity_search.dart
+test_image_metadata.dart
+test_image_search.dart
 ```
 
-These scripts print detailed execution results.
+These scripts print detailed execution evidence.
 
-### 21.2 Flutter Widget Tests
+### 24.2 Image Service Automated Tests
 
-The final widget tests are in:
+The file:
+
+```text
+test/image_search_service_test.dart
+```
+
+contains:
+
+```text
+11 independent automated tests
+```
+
+They cover:
+
+- Image loading
+- Searchable metadata
+- Expected image ranking
+- Empty query
+- Unrelated query
+- Result limiting
+- Descending sorting
+
+### 24.3 Flutter Widget Tests
+
+The file:
 
 ```text
 test/widget_test.dart
 ```
 
+contains:
+
+```text
+3 independent widget tests
+```
+
 They validate:
 
 - Application startup
-- Search-interface display
+- Updated loading message
+- Text and image counters
+- Search interface
 - Empty-query validation
 - Clear-button behaviour
 
+The full final test suite contains:
+
+```text
+14 passed
+0 failed
+```
+
 ---
 
-## 22. Widget-Test Technical Design
+## 25. Widget-Test Technical Design
 
-The application performs real local file-system operations.
+The application performs real local file-system operations during startup.
 
-The widget test therefore uses:
+The widget tests therefore use:
 
 ```dart
 tester.runAsync(...)
@@ -1036,10 +1589,12 @@ This allows:
 
 - Directory listing
 - File reading
-- Parsing
+- Text parsing
+- JSON reading
+- Image-file validation
 - Asynchronous indexing
 
-The test also uses a bounded helper that waits for:
+The tests use a bounded helper that waits for:
 
 ```text
 Search local content
@@ -1047,11 +1602,11 @@ Search local content
 
 to appear.
 
-This avoids indefinite waiting.
+This prevents indefinite waiting.
 
 ---
 
-## 23. Desktop Test Viewport
+## 26. Desktop Test Viewport
 
 The widget tests use:
 
@@ -1060,17 +1615,17 @@ The widget tests use:
 Device pixel ratio: 1.0
 ```
 
-This reflects the Windows desktop use case.
+This reflects the Windows desktop target.
 
-The size prevents artificial overflow errors caused by Flutter’s smaller default widget-test viewport.
+The larger viewport prevents artificial overflow errors caused by Flutter's smaller default test viewport.
 
 The viewport is reset after every test.
 
 ---
 
-## 24. Build Architecture
+## 27. Build Architecture
 
-The Windows application is built using Flutter’s Windows desktop target.
+The Windows application is built using Flutter's Windows desktop target.
 
 The command is:
 
@@ -1084,46 +1639,48 @@ The generated debug executable is:
 build/windows/x64/runner/Debug/offline_multimodal_retrieval.exe
 ```
 
-The Windows project contains generated C++ and CMake files required by Flutter desktop.
+The Windows directory contains generated C++, CMake, and runner infrastructure.
 
-These files are infrastructure rather than retrieval logic.
+These files support execution but do not contain the main retrieval logic.
 
 ---
 
-## 25. Dependency Architecture
+## 28. Dependency Architecture
 
-Dependencies are managed using:
+Dependencies are managed through:
 
 ```text
 pubspec.yaml
 pubspec.lock
 ```
 
-The project retains dependency versions compatible with the current Flutter environment.
+The current dependency versions are compatible with the active Flutter environment.
 
-Available but incompatible newer versions are not automatically installed during finalisation.
+Newer but incompatible versions are not automatically installed.
 
-This reduces regression risk.
+This reduces regression risk during finalisation.
 
 ---
 
-## 26. Source-Control Architecture
+## 29. Source-Control Architecture
 
 The project uses Git and GitHub.
 
-The primary branch is:
+The main branch is:
 
 ```text
 main
 ```
 
-The development process includes:
+The development workflow is:
 
 ```text
 Implement
-→ Test
-→ Capture evidence
-→ Document
+→ Run command-line test
+→ Run automated tests
+→ Run Windows application
+→ Capture screenshots
+→ Update documentation
 → Commit
 → Push
 ```
@@ -1143,46 +1700,100 @@ docs/week8
 
 ---
 
-## 27. Current Architecture Strengths
+## 30. Current Architecture Strengths
 
-The current architecture provides:
+The final architecture provides:
 
-- Clear model-service-UI separation
+- Clear text and image branches
+- Unified query interface
+- Typed data models
+- Model-service-UI separation
 - Reusable backend services
 - Offline-first processing
-- Strong local privacy
-- Deterministic retrieval behaviour
-- Modular weekly development
-- Testable service boundaries
+- Local privacy
+- Deterministic behaviour
 - Explicit error handling
+- Testable service boundaries
 - Windows desktop integration
-- Simple future extension points
+- Image thumbnail display
+- Easy future extension points
 
 ---
 
-## 28. Current Architecture Limitations
+## 31. Current Architecture Limitations
 
 The current architecture does not yet include:
 
-- Persistent vector storage
-- Folder-selection service
-- PDF parser
-- Office parser
-- OCR service
-- Image embedding service
-- Neural text embedding model
-- Multimodal ranking service
+- Persistent text vectors
+- Persistent image vectors
+- User-selected folders
+- PDF parsing
+- Word parsing
+- PowerPoint parsing
+- OCR
+- Direct image-pixel analysis
+- CLIP or MobileCLIP
+- Image-to-image retrieval
+- Neural semantic text embeddings
+- Unified neural multimodal vector space
 - Background indexing
 - Incremental indexing
-- File-watching service
+- File watching
 - Search history
 - User settings persistence
 - Installer packaging
 - Continuous integration
 
+The current image branch depends on manually written:
+
+```text
+description
+tags
+```
+
+Incorrect metadata can produce inaccurate image results.
+
 ---
 
-## 29. Future Target Architecture
+## 32. Current Multimodal Status
+
+The current system processes two content types:
+
+```text
+Text documents
++
+Images
+```
+
+The interface can return both text and image results.
+
+However, the image branch is metadata-based.
+
+Current behaviour:
+
+```text
+Text query
+→ Compare with image description and tags
+→ Return image
+```
+
+Not currently implemented:
+
+```text
+Image pixels
+→ Neural image encoder
+→ Visual-semantic vector
+```
+
+Therefore, the current system should be described as:
+
+> A local multimodal retrieval prototype supporting text retrieval and metadata-based text-to-image retrieval.
+
+This wording accurately reflects the implemented architecture.
+
+---
+
+## 33. Future Target Architecture
 
 A future architecture could be:
 
@@ -1191,7 +1802,7 @@ Flutter UI
    ↓
 Application Controller
    ↓
-Document Import Service
+Document and Image Import Service
    ↓
 Format-Specific Parsers
    ├── TXT Parser
@@ -1200,19 +1811,23 @@ Format-Specific Parsers
    ├── Word Parser
    ├── PowerPoint Parser
    ├── OCR Service
-   └── Image Metadata Parser
+   └── Image Loader
    ↓
 Text and Image Processing
    ↓
 Multimodal Embedding Layer
-   ├── Text Embedding Model
-   └── Image Embedding Model
+   ├── Neural Text Encoder
+   └── Neural Image Encoder
+   ↓
+Unified Vector Space
    ↓
 Persistent Local Vector Store
    ↓
 Hybrid Retrieval Service
    ├── Keyword Search
-   ├── Semantic Search
+   ├── Semantic Text Search
+   ├── Text-to-Image Search
+   ├── Image-to-Image Search
    └── Metadata Filtering
    ↓
 Ranked Multimodal Results
@@ -1220,65 +1835,79 @@ Ranked Multimodal Results
 
 ---
 
-## 30. Future API Architecture
+## 34. Future API Architecture
 
-The current system uses internal Dart interfaces.
+The current project uses internal Dart service interfaces.
 
-A future backend could expose:
+It does not currently implement REST endpoints.
+
+A future backend might expose:
 
 ```text
 POST /index
 POST /search
+POST /search/images
 GET /documents
+GET /images
 GET /status
 DELETE /index
 ```
 
 An OpenAPI document would be appropriate only after real HTTP endpoints are implemented.
 
-The current internal architecture should not be incorrectly described as an existing REST API.
+The current system should not be described as having an existing REST API.
 
 ---
 
-## 31. Security and Privacy Considerations
+## 35. Security and Privacy Considerations
 
 The current architecture supports privacy by:
 
-- Keeping document processing local
-- Avoiding document-content uploads
+- Keeping text processing local
+- Keeping image metadata local
+- Avoiding file uploads
 - Avoiding cloud vector storage
 - Avoiding external retrieval services
-- Keeping vectors in memory
+- Keeping indexes in memory
 
 Future production work should address:
 
-- File permission checks
-- Path traversal protection
-- Malformed file handling
+- File-permission checks
+- Path-traversal protection
+- Malformed JSON handling
+- Malformed image handling
 - Local database encryption
 - Secure deletion
 - Log redaction
 - Dependency vulnerability scanning
+- Metadata integrity checks
 
 ---
 
-## 32. Performance Considerations
+## 36. Performance Considerations
 
-The current sample dataset is small.
-
-Current startup complexity includes:
+The current dataset is small:
 
 ```text
-Read all supported files
-→ Process all text
-→ Rebuild all chunks
-→ Rebuild vocabulary
-→ Rebuild all vectors
+2 supported text documents
+5 supported images
+```
+
+Current startup work includes:
+
+```text
+Read all text files
+→ Parse all text
+→ Rebuild text chunks
+→ Rebuild text vocabulary
+→ Rebuild text vectors
+→ Read image metadata
+→ Check all image files
 ```
 
 This is acceptable for demonstration data.
 
-For larger datasets, the architecture should add:
+For a larger dataset, the architecture should add:
 
 - Incremental indexing
 - Cached vectors
@@ -1287,72 +1916,110 @@ For larger datasets, the architecture should add:
 - File-change detection
 - Batch processing
 - Pagination
-- Search-result virtualization
+- Image lazy loading
+- Result virtualization
 
 ---
 
-## 33. Scalability Considerations
+## 37. Scalability Considerations
 
 Current limitations affecting scale include:
 
-- Full index rebuild
+- Full text-index rebuild
+- Image metadata reload
 - In-memory vector storage
-- Linear comparison against all vectors
-- Single local directory
-- No batching
+- Linear comparison against all text vectors
+- Linear comparison against all image metadata
+- Fixed local directories
 - No indexing queue
+- No batching
 
 Potential improvements include:
 
 - Approximate nearest-neighbour search
 - Vector database indexing
-- Hierarchical document indexing
 - Metadata prefilters
 - Parallel parsing
-- Lazy loading
+- Lazy image loading
 - Cached tokenisation
+- Cached embeddings
+- Background workers
 
 ---
 
-## 34. Traceability
+## 38. Traceability
 
 | Requirement | Architectural Component |
 |---|---|
-| Parse local files | `FileParserService` |
+| Parse TXT and Markdown | `FileParserService` |
 | Clean text | `TextProcessingService` |
 | Divide documents | `TextChunkingService` |
-| Build vocabulary | `SimpleEmbeddingService` |
-| Generate vectors | `SimpleEmbeddingService` |
-| Compare query and content | `SimilaritySearchService` |
-| Rank results | `SimilaritySearchService` |
-| Display interface | `SearchScreen` |
+| Build text vocabulary | `SimpleEmbeddingService` |
+| Generate text vectors | `SimpleEmbeddingService` |
+| Compare query with text | `SimilaritySearchService` |
+| Rank text results | `SimilaritySearchService` |
+| Load image metadata | `ImageMetadataService` |
+| Validate image files | `ImageMetadataService` |
+| Represent images | `ImageDocument` |
+| Represent image results | `ImageSearchResult` |
+| Compare query with images | `ImageSearchService` |
+| Rank image results | `ImageSearchService` |
+| Display unified interface | `SearchScreen` |
+| Display thumbnails | `SearchScreen` and `Image.file` |
 | Handle errors | Services and `SearchScreen` |
 | Run offline | Local file system and in-memory services |
+| Test image services | `test/image_search_service_test.dart` |
 | Test UI | `test/widget_test.dart` |
 | Test backend stages | `tool/` scripts |
 
 ---
 
-## 35. Architecture Summary
+## 39. Architecture Summary
 
-The final system architecture is a modular local-first Flutter desktop architecture.
+The final architecture is a modular local-first Flutter Windows desktop architecture.
 
 Its core structure is:
 
 ```text
-Local files
-→ Parser
+Local text files
+→ Text parser
 → Text processor
-→ Chunker
-→ Vocabulary and vectors
-→ Similarity search
-→ Ranked Flutter results
+→ Text chunker
+→ Text vectors
+→ Text similarity search
+→ Ranked text results
+```
+
+and:
+
+```text
+Local image files
+→ Image metadata loader
+→ Description and tags
+→ Image metadata vectors
+→ Image similarity search
+→ Ranked image results
+→ Local thumbnail display
+```
+
+Both branches are coordinated through:
+
+```text
+SearchScreen
+```
+
+The unified architecture is:
+
+```text
+One text query
+├── Text retrieval
+└── Image retrieval
 ```
 
 The architecture successfully separates:
 
 ```text
-Data
+Local data
 Models
 Services
 Application coordination
@@ -1361,11 +2028,14 @@ Testing
 Documentation
 ```
 
-This structure is appropriate for the current prototype and provides a clear foundation for future:
+The current structure is suitable for the completed prototype and provides a clear foundation for future:
 
-- Semantic retrieval
 - PDF and Office support
-- Image retrieval
+- OCR
+- Neural text embeddings
+- Direct image understanding
+- CLIP or MobileCLIP
+- Image-to-image search
 - Persistent vector storage
-- Multimodal ranking
 - Larger-scale local indexing
+- True unified multimodal retrieval

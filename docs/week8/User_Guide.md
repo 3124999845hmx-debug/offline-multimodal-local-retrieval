@@ -8,12 +8,13 @@
 |---|---|
 | Project | Offline Multimodal Local Retrieval System |
 | Document Title | User Guide |
-| Version | 1.0 |
+| Version | 1.1 |
 | Status | Final |
 | Author | Mingxuan Huang |
-| Date | 2026/07/27 |
+| Original Date | 2026/07/27 |
+| Final Revision Date | 2026/07/30 |
 | Intended Users | Project supervisor, developer, evaluator, and demonstration users |
-| Supported Platform | Windows desktop |
+| Validated Platform | Windows desktop |
 
 ---
 
@@ -21,7 +22,13 @@
 
 This guide explains how to install, run, and use the Offline Multimodal Local Retrieval System.
 
-The application is a local-first Flutter desktop prototype that allows users to search indexed text content stored on the local device.
+The application is a local-first Flutter Windows desktop prototype that allows users to search:
+
+```text
+Local TXT and Markdown content
++
+Local JPG, JPEG, and PNG images
+```
 
 The current version supports:
 
@@ -32,11 +39,16 @@ The current version supports:
 - Shared vocabulary generation
 - Term-frequency vector generation
 - Cosine-similarity search
-- Ranked search results
+- Ranked text search results
+- JPG, JPEG, and PNG image loading
+- Image metadata loading
+- Metadata-based text-to-image retrieval
+- Ranked image results
+- Local image-thumbnail display
 - Flutter Windows desktop interface
 - Offline execution
 
-The current version does not require a cloud service or external search server.
+The current version does not require a cloud service, external retrieval server, or remote vector database.
 
 ---
 
@@ -45,16 +57,23 @@ The current version does not require a cloud service or external search server.
 The application provides the following user-facing features:
 
 - Automatic loading of local sample documents
+- Automatic loading of local image metadata
 - Automatic local text indexing
-- Search query input
+- Unified text query input
+- Text-result retrieval
+- Image-result retrieval
 - Search button
 - Clear button
 - Reload button
-- Search-result ranking
-- Similarity-score display
-- Source filename display
-- Chunk-index display
-- Content preview
+- Ranked result display
+- Cosine-similarity score display
+- Text source filename display
+- Text chunk-index display
+- Text preview display
+- Image-thumbnail display
+- Image filename display
+- Image description display
+- Image tag display
 - Local file-path display
 - Empty-query validation
 - Empty-result feedback
@@ -67,13 +86,13 @@ The application provides the following user-facing features:
 
 ### 4.1 Operating System
 
-The current tested environment is:
+The final validated environment is:
 
 ```text
 Microsoft Windows
 ```
 
-The project includes additional Flutter platform folders, but Week 8 final validation was performed on Windows desktop.
+The project includes other Flutter platform folders, but the final retrieval functionality was tested on Windows desktop.
 
 ### 4.2 Required Software
 
@@ -95,19 +114,15 @@ C++ CMake tools for Windows
 Windows SDK
 ```
 
-### 4.3 Recommended Commands
+### 4.3 Environment Verification
 
-Use the following command to verify the environment:
+Use:
 
 ```bash
 flutter doctor -v
 ```
 
-A correctly configured environment should display:
-
-```text
-No issues found!
-```
+A correctly configured environment should not report any blocking Windows desktop toolchain error.
 
 ---
 
@@ -130,10 +145,16 @@ tool/
 windows/
 ```
 
-The current sample documents are stored in:
+The local text files are stored in:
 
 ```text
 data/sample_documents
+```
+
+The local images and image metadata are stored in:
+
+```text
+data/sample_images
 ```
 
 The main application source files are:
@@ -147,19 +168,21 @@ lib/screens/search_screen.dart
 
 ## 6. Supported File Types
 
-The current parser supports:
+The final prototype supports the following types.
 
 | File Type | Extension | Status |
 |---|---|---|
 | Plain text | `.txt` | Supported |
 | Markdown | `.md` | Supported |
+| JPG image | `.jpg` | Supported |
+| JPEG image | `.jpeg` | Supported |
+| PNG image | `.png` | Supported |
 | PDF | `.pdf` | Safely skipped |
 | Word document | `.docx` | Not implemented |
 | PowerPoint | `.pptx` | Not implemented |
-| Image | `.png`, `.jpg` | Not indexed |
 | Scanned document | Various | OCR not implemented |
 
-Unsupported file types do not terminate the application.
+Unsupported text-file types do not terminate the application.
 
 For example:
 
@@ -171,19 +194,19 @@ This message is informational rather than a runtime error.
 
 ---
 
-## 7. Preparing Local Documents
+## 7. Preparing Local Text Documents
 
-The current prototype reads documents from:
+The prototype reads text documents from:
 
 ```text
 data/sample_documents
 ```
 
-To test the application:
+To add a supported text file:
 
 1. Open the project directory.
 2. Open `data/sample_documents`.
-3. Add a TXT or Markdown file.
+3. Add a `.txt` or `.md` file.
 4. Ensure the file contains readable text.
 5. Start or reload the application.
 
@@ -205,7 +228,82 @@ The current prototype does not provide a graphical folder-selection dialog.
 
 ---
 
-## 8. Installing Project Dependencies
+## 8. Preparing Local Images
+
+The prototype reads images and image metadata from:
+
+```text
+data/sample_images
+```
+
+The current sample files are:
+
+```text
+car.jpg
+cat.jpg
+mountain.jpg
+office.jpg
+微信截图.png
+image_metadata.json
+```
+
+### 8.1 Adding an Image
+
+To add another image:
+
+1. Copy a `.jpg`, `.jpeg`, or `.png` file into `data/sample_images`.
+2. Open `image_metadata.json`.
+3. Add a matching metadata entry.
+4. Save the JSON file.
+5. Press Reload or restart the application.
+
+### 8.2 Image Metadata Format
+
+Each image must have:
+
+```text
+fileName
+description
+tags
+```
+
+Example:
+
+```json
+{
+  "fileName": "cat.jpg",
+  "description": "A domestic cat sitting indoors.",
+  "tags": [
+    "cat",
+    "animal",
+    "pet",
+    "indoor",
+    "feline"
+  ]
+}
+```
+
+The value of `fileName` must exactly match the actual image filename.
+
+The description and tags are used as the image's searchable text.
+
+### 8.3 Important Limitation
+
+The current system does not directly analyse image pixels.
+
+It performs:
+
+```text
+User text query
+→ Compare with image description and tags
+→ Return ranked image results
+```
+
+Therefore, image search quality depends on the accuracy of the metadata.
+
+---
+
+## 9. Installing Project Dependencies
 
 Open a terminal in the project root.
 
@@ -215,7 +313,7 @@ Run:
 flutter pub get
 ```
 
-This command downloads the dependencies defined in:
+This downloads the dependencies defined in:
 
 ```text
 pubspec.yaml
@@ -223,15 +321,19 @@ pubspec.yaml
 
 The output may show that newer package versions are available.
 
+For example:
+
+```text
+packages have newer versions incompatible with dependency constraints
+```
+
 This does not necessarily indicate an error.
 
-During Week 8 final validation, some newer versions were incompatible with the current dependency constraints.
-
-The working versions were retained to avoid introducing final-stage instability.
+The final working dependency versions were retained to reduce regression risk.
 
 ---
 
-## 9. Running the Windows Application
+## 10. Running the Windows Application
 
 From the project root, run:
 
@@ -263,7 +365,7 @@ The executable is generated under:
 build/windows/x64/runner/Debug/
 ```
 
-To exit the running application from the terminal, press:
+To stop the running application from the terminal, press:
 
 ```text
 q
@@ -271,17 +373,23 @@ q
 
 ---
 
-## 10. Initial Application Screen
+## 11. Initial Application Screen
 
-After startup, the application automatically scans the local sample directory.
-
-During indexing, the application displays:
+After startup, the application automatically loads:
 
 ```text
-Loading and indexing local documents...
+Local text documents
++
+Local image metadata
 ```
 
-After indexing completes, the main interface displays:
+During initialisation, the application displays:
+
+```text
+Loading and indexing local documents and images...
+```
+
+After loading completes, the interface displays:
 
 - Application title
 - Search query field
@@ -291,29 +399,31 @@ After indexing completes, the main interface displays:
 - Document count
 - Text chunk count
 - Vocabulary size
-- Vector count
+- Text vector count
+- Image count
 - Ready state
 
 ![Final Initial Application Screen](images/windows_app_final_initial.png)
 
-**Figure 1.** Final Windows desktop application after local document indexing.
+**Figure 1.** Windows desktop application after local text and image initialisation.
 
-For the current sample dataset, the application may display:
+For the current sample dataset, the interface displays:
 
 ```text
 Documents: 2
 Text chunks: 2
 Vocabulary: 17
-Vectors: 2
+Text vectors: 2
+Images: 5
 ```
 
-These values depend on the files and chunk size used by the application.
+These values change if the local sample data changes.
 
 ---
 
-## 11. Searching Local Content
+## 12. Searching Local Content
 
-### 11.1 Entering a Query
+### 12.1 Entering a Query
 
 Click the search field.
 
@@ -325,12 +435,34 @@ metadata extraction
 
 Then either:
 
-- Click the Search button, or
+- Click Search, or
 - Press Enter
 
-### 11.2 Search Processing
+### 12.2 Unified Search Processing
 
-The application performs:
+The same query is sent to both retrieval branches.
+
+```text
+User query
+├── Search text chunks
+└── Search image descriptions and tags
+```
+
+The application then displays:
+
+```text
+Text results
++
+Image results
+```
+
+depending on what matches the query.
+
+---
+
+## 13. Text Search
+
+The text branch performs:
 
 ```text
 Query text
@@ -341,53 +473,50 @@ Query text
 → Descending ranking
 ```
 
-### 11.3 Search Results
-
-Each result card displays:
+Each text-result card displays:
 
 - Ranking number
-- Source file name
+- Source filename
 - Chunk index
 - Similarity score
 - Text preview
 - Local source path
 
-![Final Search Result](images/windows_app_final_search.png)
+![Text Retrieval Result](images/text_retrieval_after_image_extension.png)
 
-**Figure 2.** Final Windows desktop result for a local similarity-search query.
+**Figure 2.** Text retrieval for the query `metadata extraction` after the image-retrieval extension was added.
 
 ---
 
-## 12. Understanding Similarity Scores
+## 14. Image Search
 
-The score is generated using cosine similarity.
-
-The current application uses non-negative term-frequency vectors.
-
-Typical scores range from:
+The image branch compares the query against:
 
 ```text
-0.0 to 1.0
+Image description
++
+Image tags
 ```
 
-Interpretation:
+Each image-result card displays:
 
-| Score | General Meaning |
-|---:|---|
-| Close to `1.0` | Strong vocabulary overlap |
-| Medium positive value | Partial overlap |
-| Close to `0.0` | Very weak overlap |
-| `0.0` | No matching vocabulary |
+- Ranking number
+- Image thumbnail
+- Image filename
+- Description
+- Tags
+- Similarity score
+- Local source path
 
-The score is not a probability.
+![Text-to-Image Search Result](images/text_to_image_search_cat.png)
 
-A higher score only indicates stronger similarity under the current vector model.
+**Figure 3.** Metadata-based text-to-image retrieval for the query `pet`.
 
 ---
 
-## 13. Example Queries
+## 15. Text Search Examples
 
-### 13.1 Metadata Query
+### 15.1 Metadata Query
 
 ```text
 metadata extraction
@@ -395,10 +524,14 @@ metadata extraction
 
 Expected result:
 
-- TXT and Markdown files containing both terms may appear.
-- Results are ordered by score.
+```text
+sample1.txt
+sample2.md
+```
 
-### 13.2 Markdown Query
+The results are ordered by similarity score.
+
+### 15.2 Markdown Query
 
 ```text
 markdown document
@@ -406,12 +539,14 @@ markdown document
 
 Expected result:
 
-- The Markdown sample file should appear as the most relevant result.
+```text
+sample2.md
+```
 
-### 13.3 Unrelated Query
+### 15.3 Unrelated Text Query
 
 ```text
-unrelated query
+completely unrelated words
 ```
 
 Expected result:
@@ -420,96 +555,108 @@ Expected result:
 No similar content found
 ```
 
-This occurs because the query terms do not exist in the current vocabulary.
+---
+
+## 16. Image Search Examples
+
+### 16.1 Cat Search
+
+```text
+pet
+```
+
+Expected image:
+
+```text
+cat.jpg
+```
+
+### 16.2 Car Search
+
+```text
+vehicle road
+```
+
+Expected image:
+
+```text
+car.jpg
+```
+
+### 16.3 Mountain Search
+
+```text
+mountain nature
+```
+
+Expected image:
+
+```text
+mountain.jpg
+```
+
+### 16.4 Office Search
+
+```text
+office computer
+```
+
+Expected image:
+
+```text
+office.jpg
+```
+
+### 16.5 Website Screenshot Search
+
+```text
+video website gaming
+```
+
+Expected image:
+
+```text
+微信截图.png
+```
 
 ---
 
-## 14. Empty Query Validation
+## 17. Understanding Similarity Scores
 
-Clicking Search without entering text displays:
+The system uses cosine similarity.
+
+The current vectors contain non-negative term-frequency values.
+
+Typical scores range from:
 
 ```text
-Please enter a search query.
+0.0 to 1.0
 ```
 
-The application does not execute a search for an empty query.
+| Score | General Meaning |
+|---:|---|
+| Close to `1.0` | Strong term overlap |
+| Medium positive value | Partial overlap |
+| Close to `0.0` | Weak overlap |
+| `0.0` | No shared vocabulary |
 
-This prevents unnecessary processing and provides clear user feedback.
+The score is not a probability.
+
+A score of `0.60` does not mean a 60% certainty.
+
+It only indicates the relative overlap produced by the current vector model.
 
 ---
 
-## 15. Using the Clear Button
+## 18. Understanding Text Results
 
-The Clear button performs the following actions:
+Each text result contains the following information.
 
-```text
-Clear query field
-→ Remove previous search results
-→ Remove previous error messages
-→ Return to ready state
-→ Return focus to the query field
-```
+### 18.1 Ranking
 
-Use Clear when starting a new search.
+A numbered marker shows the result order.
 
----
-
-## 16. Using the Reload Button
-
-The reload button is located in the application bar.
-
-Pressing Reload performs:
-
-```text
-Rescan sample directory
-→ Reparse supported files
-→ Reprocess text
-→ Rebuild text chunks
-→ Rebuild vocabulary
-→ Regenerate vectors
-```
-
-Use Reload after adding or modifying files under:
-
-```text
-data/sample_documents
-```
-
-The terminal may display the PDF skip message again after each reload.
-
-This is expected.
-
----
-
-## 17. Keyboard Interaction
-
-The application supports Enter-key search.
-
-After typing a query, press:
-
-```text
-Enter
-```
-
-This triggers the same action as clicking the Search button.
-
-The interface also returns focus to the search field after:
-
-- Application startup
-- Clear
-- Reload completion
-
----
-
-## 18. Search Result Information
-
-Each result contains:
-
-### Ranking
-
-A numbered circle indicates the result order.
-
-### Source Filename
+### 18.2 Source Filename
 
 Example:
 
@@ -517,7 +664,7 @@ Example:
 sample1.txt
 ```
 
-### Chunk Index
+### 18.3 Chunk Index
 
 Example:
 
@@ -525,9 +672,9 @@ Example:
 Chunk 0
 ```
 
-A document may be divided into multiple chunks.
+A longer document may be divided into multiple chunks.
 
-### Similarity Score
+### 18.4 Similarity Score
 
 Example:
 
@@ -535,35 +682,238 @@ Example:
 0.4472
 ```
 
-The score is calculated using cosine similarity.
+### 18.5 Preview
 
-### Preview
+A shortened section of matching text is displayed.
 
-A shortened section of the matching text is displayed.
+### 18.6 Source Path
 
-### Source Path
+The local path is displayed as selectable text.
 
-The local file path is displayed as selectable text.
-
-The current version does not open the source file when the result card is clicked.
+The current application does not open the source file when the card is clicked.
 
 ---
 
-## 19. Troubleshooting
+## 19. Understanding Image Results
 
-## 19.1 Windows Build Toolchain Error
+Each image result contains the following information.
 
-### Error
+### 19.1 Ranking
+
+A numbered marker shows the result order.
+
+### 19.2 Thumbnail
+
+The actual local image is displayed using:
+
+```dart
+Image.file(...)
+```
+
+### 19.3 Filename
+
+Example:
+
+```text
+cat.jpg
+```
+
+### 19.4 Description
+
+Example:
+
+```text
+A domestic cat sitting indoors.
+```
+
+### 19.5 Tags
+
+Example:
+
+```text
+cat
+animal
+pet
+indoor
+feline
+```
+
+### 19.6 Similarity Score
+
+The score shows how strongly the query overlaps with the image metadata.
+
+### 19.7 File Path
+
+The local image path is displayed.
+
+The current interface does not open the image file when the result card is clicked.
+
+---
+
+## 20. Empty Query Validation
+
+Clicking Search without entering text displays:
+
+```text
+Please enter a search query.
+```
+
+The application does not execute either retrieval branch for an empty query.
+
+---
+
+## 21. Using the Clear Button
+
+The Clear button performs:
+
+```text
+Clear query field
+→ Remove text results
+→ Remove image results
+→ Remove validation messages
+→ Return to ready state
+→ Return focus to query field
+```
+
+Use Clear before starting a new query.
+
+---
+
+## 22. Using the Reload Button
+
+The Reload button is located in the application bar.
+
+Pressing Reload performs:
+
+```text
+Rescan local text directory
+→ Reparse supported text files
+→ Rebuild text chunks
+→ Rebuild vocabulary
+→ Regenerate text vectors
+→ Reload image_metadata.json
+→ Revalidate local image files
+→ Update interface counters
+```
+
+Use Reload after:
+
+- Adding a text file
+- Editing a text file
+- Adding an image
+- Replacing an image
+- Editing `image_metadata.json`
+
+The terminal may display the PDF skip message again.
+
+This is expected.
+
+---
+
+## 23. Keyboard Interaction
+
+The application supports Enter-key search.
+
+After entering a query, press:
+
+```text
+Enter
+```
+
+This triggers the same action as clicking Search.
+
+The interface returns focus to the search field after:
+
+- Startup
+- Clear
+- Reload completion
+
+---
+
+## 24. Running Automated Tests
+
+Run:
+
+```bash
+flutter test
+```
+
+The final test suite contains:
+
+```text
+2 image metadata tests
+9 image retrieval tests
+3 Flutter widget tests
+```
+
+The total is:
+
+```text
+14 automated tests
+```
+
+The expected result is:
+
+```text
+00:09 +14: All tests passed!
+```
+
+![Final Automated Tests](images/flutter_test_with_image_retrieval.png)
+
+**Figure 4.** Final test suite showing 14 passed tests and no failures.
+
+The terminal may also display:
+
+```text
+Unsupported file type skipped: sample3.pdf
+```
+
+This is expected.
+
+---
+
+## 25. Running Static Analysis
+
+Run:
+
+```bash
+flutter analyze
+```
+
+The final recorded state was:
+
+```text
+0 errors
+0 warnings
+139 information-level notices
+```
+
+The main notices were:
+
+```text
+avoid_print
+avoid_relative_lib_imports
+```
+
+These are code-quality notices and do not prevent execution.
+
+---
+
+## 26. Troubleshooting
+
+### 26.1 Windows Build Toolchain Error
+
+#### Error
 
 ```text
 Unable to find suitable Visual Studio toolchain.
 ```
 
-### Cause
+#### Cause
 
-Required C++ desktop-development components are missing.
+Required Windows C++ desktop components are missing.
 
-### Solution
+#### Solution
 
 Open Visual Studio Installer.
 
@@ -589,19 +939,19 @@ flutter doctor -v
 
 ---
 
-## 19.2 Unsupported PDF Message
+### 26.2 Unsupported PDF Message
 
-### Message
+#### Message
 
 ```text
 Unsupported file type skipped: sample3.pdf
 ```
 
-### Meaning
+#### Meaning
 
 The current parser does not extract PDF content.
 
-### Action
+#### Action
 
 No action is required.
 
@@ -609,61 +959,169 @@ The application continues processing supported files.
 
 ---
 
-## 19.3 No Similar Content Found
+### 26.3 No Similar Content Found
 
-### Message
+#### Message
 
 ```text
 No similar content found
 ```
 
-### Possible Causes
+#### Possible Causes
 
-- Query words are absent from indexed documents.
-- Query uses synonyms not present in the source text.
-- Query contains spelling differences.
-- Relevant file type is unsupported.
-- The source file has not been reloaded.
+- Query terms do not appear in the text data.
+- Query terms do not appear in image descriptions or tags.
+- Synonyms were used instead of exact indexed terms.
+- A file was added but Reload was not pressed.
+- Image metadata is incomplete.
+- The relevant file type is unsupported.
 
-### Suggested Actions
+#### Suggested Actions
 
-- Use exact terms from the document.
-- Try a shorter query.
-- Check the local file content.
-- Press Reload after changing files.
-- Confirm that the file is TXT or Markdown.
+- Use exact terms found in the source content.
+- Use shorter queries.
+- Check spelling.
+- Review the image tags.
+- Press Reload.
+- Confirm the file extension is supported.
 
 ---
 
-## 19.4 Empty Query Message
+### 26.4 Image Does Not Appear in Search
 
-### Message
+#### Possible Causes
+
+- The image is not listed in `image_metadata.json`.
+- `fileName` does not match the physical file.
+- The image extension is unsupported.
+- Description and tags do not include useful search terms.
+- The image file is missing.
+- JSON syntax is invalid.
+
+#### Checks
+
+Confirm that:
+
+```text
+data/sample_images/image_metadata.json
+```
+
+contains a valid entry.
+
+Confirm that:
+
+```text
+fileName
+```
+
+exactly matches the real filename.
+
+---
+
+### 26.5 Image Thumbnail Does Not Display
+
+#### Possible Causes
+
+- The file path is incorrect.
+- The image is corrupted.
+- The image was renamed without updating JSON.
+- The file does not exist.
+
+#### Action
+
+Check the image in:
+
+```text
+data/sample_images
+```
+
+Then confirm that the metadata filename matches it exactly.
+
+---
+
+### 26.6 Invalid JSON Error
+
+#### Possible Cause
+
+`image_metadata.json` contains invalid JSON.
+
+Common mistakes include:
+
+- Missing comma
+- Extra comma
+- Missing quotation mark
+- Missing square bracket
+- Invalid field name
+
+#### Action
+
+Check that the root structure is an array:
+
+```json
+[
+  {
+    "fileName": "cat.jpg",
+    "description": "A domestic cat sitting indoors.",
+    "tags": ["cat", "animal", "pet"]
+  }
+]
+```
+
+---
+
+### 26.7 Metadata Does Not Match Image
+
+#### Problem
+
+The displayed image is unrelated to its description or tags.
+
+#### Cause
+
+The image file and metadata entry do not describe the same content.
+
+#### Action
+
+Either:
+
+- Replace the image, or
+- Correct the description and tags
+
+The retrieval service cannot detect this semantic mismatch automatically.
+
+---
+
+### 26.8 Empty Query Message
+
+#### Message
 
 ```text
 Please enter a search query.
 ```
 
-### Solution
+#### Solution
 
-Enter one or more search terms before pressing Search.
+Enter at least one search term.
 
 ---
 
-## 19.5 Application Remains on Loading Screen
+### 26.9 Application Remains on Loading Screen
 
-### Possible Causes
+#### Possible Causes
 
-- Sample directory is unavailable.
-- A local file cannot be read.
-- File permissions prevent access.
-- The configured directory path is incorrect.
+- Text directory is missing.
+- Image directory is missing.
+- `image_metadata.json` cannot be read.
+- JSON format is invalid.
+- Local file permissions prevent access.
+- A configured path is incorrect.
 
-### Checks
+#### Checks
 
-Confirm that this directory exists:
+Confirm that these directories exist:
 
 ```text
 data/sample_documents
+data/sample_images
 ```
 
 Run:
@@ -672,99 +1130,74 @@ Run:
 flutter run -d windows
 ```
 
-Review the terminal output for parsing errors.
+Review terminal errors.
 
 ---
 
-## 19.6 Package Update Notices
+### 26.10 Package Update Notices
 
-### Message
+#### Message
 
 ```text
 packages have newer versions incompatible with dependency constraints
 ```
 
-### Meaning
+#### Meaning
 
-New package versions exist, but the project currently uses compatible versions defined by its dependency constraints.
+Newer versions exist, but the current project uses compatible constrained versions.
 
-### Action
+#### Action
 
 No immediate action is required.
 
-Future upgrades should be tested in a separate development branch.
+Test future upgrades in a separate branch.
 
 ---
 
-## 19.7 Static Analysis Info Notices
+### 26.11 Static Analysis Notices
 
-The command:
-
-```bash
-flutter analyze
-```
-
-may report:
+The analyzer may report:
 
 ```text
 avoid_print
 avoid_relative_lib_imports
 ```
 
-These are code-quality notices.
-
-They do not prevent the application from running.
+These notices do not block execution.
 
 ---
 
-## 20. Running Automated Tests
+## 27. Windows and Web Behaviour
 
-Run:
-
-```bash
-flutter test
-```
-
-The final Week 8 test suite includes:
-
-- Application startup
-- Retrieval-interface display
-- Empty-query validation
-- Clear-button behaviour
-
-The expected result is:
+The final validated platform is:
 
 ```text
-All tests passed!
+Windows desktop
 ```
 
-The PDF skip message may appear during each test because the retrieval pipeline is initialised separately for every widget test.
+The application uses:
 
----
+```dart
+dart:io
+```
 
-## 21. Running Static Analysis
+for local file-system access.
 
-Run:
+Because of this, the browser version cannot use the same local directory workflow without additional architecture changes.
+
+The final project should therefore be demonstrated using:
 
 ```bash
-flutter analyze
+flutter run -d windows
 ```
 
-The final Week 8 state had:
-
-```text
-0 errors
-0 warnings
-100 info-level lint notices
-```
-
-Compile-blocking issues were not present.
+The web interface may open, but the current local retrieval pipeline is not the validated web target.
 
 ---
 
-## 22. Current Retrieval Limitations
+## 28. Current Retrieval Limitations
 
-The current search implementation uses:
+The current system uses:
 
 ```text
 Normalised term-frequency vectors
@@ -773,76 +1206,113 @@ Normalised term-frequency vectors
 This means:
 
 - Exact shared terms are recognised.
-- Term occurrence frequency affects score.
-- Synonyms are not understood.
+- Repeated terms affect score.
+- Synonyms are not reliably understood.
 - Contextual meaning is limited.
-- Semantically related words may not match.
+- Semantically related terms may not match.
 
 For example:
 
 ```text
-car
+vehicle
 ```
 
-may not match:
+and:
 
 ```text
 automobile
 ```
 
-unless both terms exist in the indexed vocabulary.
+will only be connected when those terms are included in the searchable metadata or content.
 
 ---
 
-## 23. Privacy and Offline Behaviour
+## 29. Image Retrieval Limitations
 
-The current retrieval pipeline operates locally.
+The current image retrieval is metadata-based.
+
+It uses:
+
+```text
+description
++
+tags
+```
+
+It does not use:
+
+- CLIP
+- MobileCLIP
+- CNN feature extraction
+- Image embeddings
+- OCR
+- Direct image recognition
+- Image-to-image search
+
+Therefore:
+
+- Incorrect metadata can produce incorrect results.
+- Missing tags can prevent relevant images from appearing.
+- Visual similarity is not measured.
+- Two visually similar images may not match unless their text metadata overlaps.
+
+---
+
+## 30. Privacy and Offline Behaviour
+
+The retrieval pipeline operates locally.
 
 The application:
 
-- Reads local files.
-- Processes local text.
+- Reads local text files.
+- Reads local image files.
+- Reads local image metadata.
+- Processes text locally.
 - Stores vectors in memory.
-- Does not upload document contents.
-- Does not require a retrieval server.
+- Does not upload text content.
+- Does not upload image content.
+- Does not require a cloud retrieval server.
 - Does not require a cloud database.
 
-This supports the project’s offline-first objective.
+Internet access may still be needed for:
 
-The current development environment may still use internet access for downloading Flutter dependencies.
+- Flutter dependency downloads
+- Dart package downloads
+- GitHub operations
+
+Normal retrieval itself is local.
 
 ---
 
-## 24. Accessibility Features
+## 31. Accessibility Features
 
 The application includes initial accessibility support:
 
-- Semantic label for search field
-- Semantic label for Search button
-- Semantic label for Clear button
-- Semantic label for Reload button
+- Semantic labels for search controls
 - Semantic descriptions for summary values
-- Semantic descriptions for result cards
-- Live-region feedback
+- Semantic descriptions for text results
+- Semantic descriptions for image results
 - Keyboard Enter search
 - Tooltips
+- Live-region messages
+- Automatic focus behaviour
 
-The current application has not received formal WCAG certification.
+The application has not received formal WCAG certification.
 
 ---
 
-## 25. Safely Closing the Application
+## 32. Safely Closing the Application
 
-To close the application window:
+To close the desktop window:
 
 ```text
 Use the standard Windows close button
 ```
 
-To stop the Flutter debug process from the terminal:
+To stop the Flutter debug process:
 
 ```text
-Press q
+Press q in the terminal
 ```
 
 The terminal should display:
@@ -853,25 +1323,28 @@ Application finished.
 
 ---
 
-## 26. Recommended User Workflow
+## 33. Recommended User Workflow
 
 The recommended sequence is:
 
 ```text
 1. Place TXT or Markdown files in data/sample_documents
-2. Run flutter run -d windows
-3. Wait for indexing to complete
-4. Enter exact search terms
-5. Click Search or press Enter
-6. Review ranked results
-7. Press Clear before another search
-8. Press Reload after changing files
-9. Press q in the terminal to stop the application
+2. Place JPG, JPEG, or PNG images in data/sample_images
+3. Add image entries to image_metadata.json
+4. Run flutter run -d windows
+5. Wait for text and image loading to complete
+6. Enter a query
+7. Click Search or press Enter
+8. Review Text results
+9. Review Image results
+10. Press Clear before another search
+11. Press Reload after changing local data
+12. Press q to stop the application
 ```
 
 ---
 
-## 27. Known Limitations
+## 34. Known Limitations
 
 The current prototype does not yet support:
 
@@ -879,8 +1352,10 @@ The current prototype does not yet support:
 - Microsoft Word parsing
 - PowerPoint parsing
 - OCR
-- Image search
+- Direct image-pixel understanding
+- Image-to-image search
 - Neural semantic embeddings
+- CLIP or MobileCLIP
 - Persistent indexing
 - User-selected folders
 - Opening result files
@@ -889,32 +1364,36 @@ The current prototype does not yet support:
 - Production installer
 - Digital signing
 - Large-scale performance validation
+- Fully supported web retrieval
 
 ---
 
-## 28. Future Improvements
+## 35. Future Improvements
 
 Potential future improvements include:
 
 - Add PDF parsing.
 - Add Word and PowerPoint parsing.
 - Add OCR.
-- Add image embeddings.
-- Add multimodal text-to-image retrieval.
-- Add TensorFlow Lite or BERT embeddings.
+- Add neural text embeddings.
+- Add CLIP or MobileCLIP image embeddings.
+- Add direct image-pixel analysis.
+- Add image-to-image retrieval.
 - Add persistent local vector storage.
 - Add a graphical folder picker.
 - Add source-file opening.
-- Add search history.
-- Add relevance filters.
 - Add result-type filters.
+- Add text-only and image-only search modes.
+- Add search history.
+- Add automatic image caption generation.
+- Add metadata editing through the interface.
 - Add automated CI testing.
 - Replace debug prints with structured logging.
 - Package a Windows installer.
 
 ---
 
-## 29. User Guide Summary
+## 36. User Guide Summary
 
 The Offline Multimodal Local Retrieval System can be run on Windows using:
 
@@ -922,19 +1401,36 @@ The Offline Multimodal Local Retrieval System can be run on Windows using:
 flutter run -d windows
 ```
 
-The application automatically indexes supported local files and provides ranked local search results.
+The application automatically loads:
 
-The current prototype is designed for offline-first text retrieval and supports TXT and Markdown documents.
+```text
+TXT and Markdown documents
++
+JPG, JPEG, and PNG image metadata
+```
 
-Its main user workflow is:
+The main workflow is:
 
 ```text
 Run application
-→ Wait for local indexing
-→ Enter query
-→ Search
-→ Review ranked results
+→ Wait for local loading
+→ Enter one text query
+→ Search text content
+→ Search image descriptions and tags
+→ Review ranked text and image results
 → Clear or reload
 ```
 
-The system is a functional prototype and provides a foundation for future multimodal, semantic, and persistent local retrieval.
+The final prototype supports:
+
+```text
+Local text retrieval
++
+Metadata-based text-to-image retrieval
+```
+
+The image-retrieval function should be described accurately as:
+
+> Metadata-based text-to-image retrieval using local image descriptions and tags.
+
+The system is a functional local-first Windows prototype and provides a foundation for future semantic, persistent, and neural multimodal retrieval.

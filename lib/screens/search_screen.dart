@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../models/embedding_vector.dart';
+import '../models/image_document.dart';
+import '../models/image_search_result.dart';
 import '../models/similarity_result.dart';
 import '../services/file_parser_service.dart';
+import '../services/image_metadata_service.dart';
+import '../services/image_search_service.dart';
 import '../services/simple_embedding_service.dart';
 import '../services/similarity_search_service.dart';
 import '../services/text_chunking_service.dart';
@@ -11,8 +17,9 @@ import '../services/text_processing_service.dart';
 
 /// Main search interface for the offline local retrieval prototype.
 ///
-/// This screen integrates the existing parsing, text processing,
-/// text chunking, embedding generation, and similarity-search modules.
+/// The screen supports:
+/// 1. Text-to-text retrieval for TXT and Markdown documents.
+/// 2. Metadata-based text-to-image retrieval for local images.
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -21,8 +28,11 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  static const String _sampleDirectoryPath =
+  static const String _sampleDocumentDirectoryPath =
       'data/sample_documents';
+
+  static const String _sampleImageDirectoryPath =
+      'data/sample_images';
 
   final TextEditingController _searchController =
   TextEditingController();
@@ -41,10 +51,25 @@ class _SearchScreenState extends State<SearchScreen> {
   final SimpleEmbeddingService _embeddingService =
   SimpleEmbeddingService();
 
+  final ImageMetadataService _imageMetadataService =
+  const ImageMetadataService();
+
+  final ImageSearchService _imageSearchService =
+  const ImageSearchService();
+
   late final SimilaritySearchService _similaritySearchService;
 
-  List<EmbeddingVector> _embeddingVectors = [];
-  List<SimilarityResult> _searchResults = [];
+  List<EmbeddingVector> _embeddingVectors =
+  <EmbeddingVector>[];
+
+  List<SimilarityResult> _textSearchResults =
+  <SimilarityResult>[];
+
+  List<ImageDocument> _imageDocuments =
+  <ImageDocument>[];
+
+  List<ImageSearchResult> _imageSearchResults =
+  <ImageSearchResult>[];
 
   bool _isInitialising = true;
   bool _isSearching = false;
@@ -75,38 +100,47 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  /// Loads local documents and prepares all text-chunk vectors.
+  /// Loads and indexes both local text documents and image metadata.
   Future<void> _initialiseRetrievalPipeline() async {
     setState(() {
       _isInitialising = true;
       _initialisationError = null;
+      _searchError = null;
     });
 
     try {
-      // Step 1: Parse supported local files.
-      final parsedDocuments =
-      await _fileParserService.parseDocumentsFromDirectory(
-        _sampleDirectoryPath,
+      // Load image metadata and verify that the image files exist.
+      final imageDocuments =
+      await _imageMetadataService.loadImageDocuments(
+        imageDirectoryPath: _sampleImageDirectoryPath,
       );
 
-      // Step 2: Convert parsed documents into searchable documents.
+      // Parse supported TXT and Markdown files.
+      final parsedDocuments =
+      await _fileParserService.parseDocumentsFromDirectory(
+        _sampleDocumentDirectoryPath,
+      );
+
+      // Convert parsed documents into searchable documents.
       final searchableDocuments =
       _textProcessingService.convertToSearchableDocuments(
         parsedDocuments,
       );
 
-      // Step 3: Split documents into smaller text chunks.
-      final textChunks = _textChunkingService.chunkDocuments(
+      // Split documents into smaller text chunks.
+      final textChunks =
+      _textChunkingService.chunkDocuments(
         searchableDocuments,
         chunkSize: 40,
       );
 
-      // Step 4: Build one shared vocabulary.
-      final vocabulary = _embeddingService.buildVocabulary(
+      // Build one shared vocabulary for the text chunks.
+      final vocabulary =
+      _embeddingService.buildVocabulary(
         textChunks,
       );
 
-      // Step 5: Generate one vector for every text chunk.
+      // Generate one embedding vector for each text chunk.
       final embeddingVectors =
       _embeddingService.generateEmbeddings(
         textChunks,
@@ -119,9 +153,16 @@ class _SearchScreenState extends State<SearchScreen> {
 
       setState(() {
         _embeddingVectors = embeddingVectors;
+        _imageDocuments = imageDocuments;
+
         _parsedDocumentCount = parsedDocuments.length;
         _textChunkCount = textChunks.length;
         _vocabularySize = vocabulary.length;
+
+        _textSearchResults = <SimilarityResult>[];
+        _imageSearchResults = <ImageSearchResult>[];
+
+        _hasSearched = false;
         _isInitialising = false;
       });
 
@@ -139,7 +180,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  /// Runs cosine-similarity search using the current query.
+  /// Uses one query to search both text chunks and image metadata.
   Future<void> _runSearch() async {
     final query = _searchController.text.trim();
 
@@ -150,7 +191,8 @@ class _SearchScreenState extends State<SearchScreen> {
     if (query.isEmpty) {
       setState(() {
         _hasSearched = false;
-        _searchResults = [];
+        _textSearchResults = <SimilarityResult>[];
+        _imageSearchResults = <ImageSearchResult>[];
         _searchError = 'Please enter a search query.';
       });
 
@@ -165,14 +207,23 @@ class _SearchScreenState extends State<SearchScreen> {
     });
 
     try {
-      // Small asynchronous delay allows the loading state to appear.
+      // Allow the loading state to appear briefly.
       await Future<void>.delayed(
         const Duration(milliseconds: 150),
       );
 
-      final results = _similaritySearchService.search(
+      final textResults =
+      _similaritySearchService.search(
         query: query,
         embeddings: _embeddingVectors,
+        minimumScore: 0.0,
+        limit: 10,
+      );
+
+      final imageResults =
+      _imageSearchService.search(
+        query: query,
+        imageDocuments: _imageDocuments,
         minimumScore: 0.0,
         limit: 10,
       );
@@ -182,7 +233,8 @@ class _SearchScreenState extends State<SearchScreen> {
       }
 
       setState(() {
-        _searchResults = results;
+        _textSearchResults = textResults;
+        _imageSearchResults = imageResults;
         _isSearching = false;
       });
     } catch (error) {
@@ -191,19 +243,23 @@ class _SearchScreenState extends State<SearchScreen> {
       }
 
       setState(() {
-        _searchResults = [];
+        _textSearchResults = <SimilarityResult>[];
+        _imageSearchResults = <ImageSearchResult>[];
+
         _isSearching = false;
         _searchError = 'Search failed.\n$error';
       });
     }
   }
 
-  /// Clears the current query and results.
+  /// Clears the query and both result lists.
   void _clearSearch() {
     _searchController.clear();
 
     setState(() {
-      _searchResults = [];
+      _textSearchResults = <SimilarityResult>[];
+      _imageSearchResults = <ImageSearchResult>[];
+
       _hasSearched = false;
       _searchError = null;
     });
@@ -215,8 +271,9 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Shortcuts(
       shortcuts: const <ShortcutActivator, Intent>{
-        SingleActivator(LogicalKeyboardKey.enter):
-        _SearchIntent(),
+        SingleActivator(
+          LogicalKeyboardKey.enter,
+        ): _SearchIntent(),
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
@@ -235,9 +292,10 @@ class _SearchScreenState extends State<SearchScreen> {
             actions: [
               Semantics(
                 button: true,
-                label: 'Reload local documents',
+                label: 'Reload local documents and images',
                 child: IconButton(
-                  tooltip: 'Reload local documents',
+                  tooltip:
+                  'Reload local documents and images',
                   onPressed: _isInitialising
                       ? null
                       : _initialiseRetrievalPipeline,
@@ -277,15 +335,16 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildInitialisingState() {
     return Center(
       child: Semantics(
-        label: 'Loading and indexing local documents',
         liveRegion: true,
+        label:
+        'Loading and indexing local documents and images',
         child: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
             Text(
-              'Loading and indexing local documents...',
+              'Loading and indexing local documents and images...',
               textAlign: TextAlign.center,
             ),
           ],
@@ -310,7 +369,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               const SizedBox(height: 16),
               const Text(
-                'Unable to load local documents',
+                'Unable to load local content',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -351,7 +410,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Enter keywords to search the indexed local text chunks.',
+            'Enter keywords to search indexed text chunks and image metadata.',
           ),
           const SizedBox(height: 16),
           Row(
@@ -362,16 +421,17 @@ class _SearchScreenState extends State<SearchScreen> {
                   textField: true,
                   label: 'Local content search query',
                   hint:
-                  'Enter keywords such as metadata extraction',
+                  'Enter metadata extraction or animal pet',
                   child: TextField(
                     controller: _searchController,
                     focusNode: _searchFocusNode,
-                    textInputAction: TextInputAction.search,
+                    textInputAction:
+                    TextInputAction.search,
                     onSubmitted: (_) => _runSearch(),
                     decoration: const InputDecoration(
                       labelText: 'Search query',
                       hintText:
-                      'Example: metadata extraction',
+                      'Example: metadata extraction or animal pet',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(),
                     ),
@@ -381,11 +441,10 @@ class _SearchScreenState extends State<SearchScreen> {
               const SizedBox(width: 12),
               Semantics(
                 button: true,
-                label: 'Search indexed local documents',
+                label: 'Search indexed local content',
                 child: FilledButton.icon(
-                  onPressed: _isSearching
-                      ? null
-                      : _runSearch,
+                  onPressed:
+                  _isSearching ? null : _runSearch,
                   icon: _isSearching
                       ? const SizedBox(
                     width: 18,
@@ -396,7 +455,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   )
                       : const Icon(Icons.search),
                   label: Text(
-                    _isSearching ? 'Searching...' : 'Search',
+                    _isSearching
+                        ? 'Searching...'
+                        : 'Search',
                   ),
                 ),
               ),
@@ -419,7 +480,8 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Text(
                 _searchError!,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
+                  color:
+                  Theme.of(context).colorScheme.error,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -454,8 +516,13 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         _buildSummaryChip(
           icon: Icons.hub_outlined,
-          label: 'Vectors',
+          label: 'Text vectors',
           value: _embeddingVectors.length.toString(),
+        ),
+        _buildSummaryChip(
+          icon: Icons.image_outlined,
+          label: 'Images',
+          value: _imageDocuments.length.toString(),
         ),
       ],
     );
@@ -473,7 +540,9 @@ class _SearchScreenState extends State<SearchScreen> {
           icon,
           size: 18,
         ),
-        label: Text('$label: $value'),
+        label: Text(
+          '$label: $value',
+        ),
       ),
     );
   }
@@ -482,8 +551,8 @@ class _SearchScreenState extends State<SearchScreen> {
     if (_isSearching) {
       return Center(
         child: Semantics(
-          label: 'Searching local content',
           liveRegion: true,
+          label: 'Searching local content',
           child: const CircularProgressIndicator(),
         ),
       );
@@ -493,11 +562,12 @@ class _SearchScreenState extends State<SearchScreen> {
       return _buildWelcomeState();
     }
 
-    if (_searchResults.isEmpty) {
+    if (_textSearchResults.isEmpty &&
+        _imageSearchResults.isEmpty) {
       return _buildEmptyResultState();
     }
 
-    return _buildResultList();
+    return _buildCombinedResults();
   }
 
   Widget _buildWelcomeState() {
@@ -506,7 +576,7 @@ class _SearchScreenState extends State<SearchScreen> {
         padding: const EdgeInsets.all(24),
         child: Semantics(
           label:
-          'Search is ready. Enter a query to retrieve local content.',
+          'Search is ready. Enter a query to retrieve local text and images.',
           child: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -524,7 +594,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               SizedBox(height: 8),
               Text(
-                'Enter a query above to find relevant local text chunks.',
+                'Enter a query above to find relevant local text chunks and images.',
                 textAlign: TextAlign.center,
               ),
             ],
@@ -558,7 +628,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               SizedBox(height: 8),
               Text(
-                'Try another keyword that appears in the indexed documents.',
+                'Try another keyword that appears in the documents, image descriptions, or image tags.',
                 textAlign: TextAlign.center,
               ),
             ],
@@ -568,27 +638,86 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildResultList() {
+  Widget _buildCombinedResults() {
     return Semantics(
       liveRegion: true,
       label:
-      '${_searchResults.length} similarity results found',
-      child: ListView.separated(
+      '${_textSearchResults.length} text results and '
+          '${_imageSearchResults.length} image results found',
+      child: ListView(
         padding: const EdgeInsets.all(20),
-        itemCount: _searchResults.length,
-        separatorBuilder: (_, _) =>
-        const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          return _buildResultCard(
-            result: _searchResults[index],
-            ranking: index + 1,
-          );
-        },
+        children: [
+          if (_textSearchResults.isNotEmpty) ...[
+            _buildSectionHeader(
+              icon: Icons.description_outlined,
+              title: 'Text results',
+              count: _textSearchResults.length,
+            ),
+            const SizedBox(height: 12),
+            for (
+            var index = 0;
+            index < _textSearchResults.length;
+            index++
+            ) ...[
+              _buildTextResultCard(
+                result: _textSearchResults[index],
+                ranking: index + 1,
+              ),
+              if (index <
+                  _textSearchResults.length - 1)
+                const SizedBox(height: 12),
+            ],
+          ],
+          if (_textSearchResults.isNotEmpty &&
+              _imageSearchResults.isNotEmpty)
+            const SizedBox(height: 28),
+          if (_imageSearchResults.isNotEmpty) ...[
+            _buildSectionHeader(
+              icon: Icons.image_outlined,
+              title: 'Image results',
+              count: _imageSearchResults.length,
+            ),
+            const SizedBox(height: 12),
+            for (
+            var index = 0;
+            index < _imageSearchResults.length;
+            index++
+            ) ...[
+              _buildImageResultCard(
+                result: _imageSearchResults[index],
+                ranking: index + 1,
+              ),
+              if (index <
+                  _imageSearchResults.length - 1)
+                const SizedBox(height: 12),
+            ],
+          ],
+        ],
       ),
     );
   }
 
-  Widget _buildResultCard({
+  Widget _buildSectionHeader({
+    required IconData icon,
+    required String title,
+    required int count,
+  }) {
+    return Row(
+      children: [
+        Icon(icon),
+        const SizedBox(width: 8),
+        Text(
+          '$title ($count)',
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextResultCard({
     required SimilarityResult result,
     required int ranking,
   }) {
@@ -598,7 +727,8 @@ class _SearchScreenState extends State<SearchScreen> {
     return Semantics(
       container: true,
       label:
-      'Result $ranking. File ${result.sourceFileName}. '
+      'Text result $ranking. '
+          'File ${result.sourceFileName}. '
           'Chunk ${result.chunkIndex}. '
           'Similarity score $formattedScore. '
           '${result.preview}',
@@ -607,10 +737,12 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Padding(
           padding: const EdgeInsets.all(18),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+            CrossAxisAlignment.start,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
                 children: [
                   CircleAvatar(
                     child: Text(
@@ -627,7 +759,8 @@ class _SearchScreenState extends State<SearchScreen> {
                           result.sourceFileName,
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight:
+                            FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -638,7 +771,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   ),
                   Tooltip(
-                    message: 'Cosine similarity score',
+                    message:
+                    'Cosine similarity score',
                     child: Chip(
                       avatar: const Icon(
                         Icons.analytics_outlined,
@@ -667,6 +801,181 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildImageResultCard({
+    required ImageSearchResult result,
+    required int ranking,
+  }) {
+    final formattedScore =
+    result.similarityScore.toStringAsFixed(4);
+
+    final imageFile = File(
+      result.filePath,
+    );
+
+    return Semantics(
+      container: true,
+      label:
+      'Image result $ranking. '
+          'File ${result.fileName}. '
+          'Similarity score $formattedScore. '
+          '${result.description}',
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final useVerticalLayout =
+                  constraints.maxWidth < 650;
+
+              final imagePreview =
+              _buildImagePreview(
+                imageFile,
+              );
+
+              final information =
+              _buildImageInformation(
+                result: result,
+                ranking: ranking,
+                formattedScore: formattedScore,
+              );
+
+              if (useVerticalLayout) {
+                return Column(
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+                  children: [
+                    imagePreview,
+                    const SizedBox(height: 16),
+                    information,
+                  ],
+                );
+              }
+
+              return Row(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  imagePreview,
+                  const SizedBox(width: 18),
+                  Expanded(
+                    child: information,
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImagePreview(
+      File imageFile,
+      ) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: SizedBox(
+        width: 180,
+        height: 120,
+        child: Image.file(
+          imageFile,
+          fit: BoxFit.cover,
+          errorBuilder: (
+              context,
+              error,
+              stackTrace,
+              ) {
+            return Container(
+              color: Theme.of(context)
+                  .colorScheme
+                  .surfaceContainerHighest,
+              alignment: Alignment.center,
+              child: const Icon(
+                Icons.broken_image_outlined,
+                size: 42,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageInformation({
+    required ImageSearchResult result,
+    required int ranking,
+    required String formattedScore,
+  }) {
+    return Column(
+      crossAxisAlignment:
+      CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment:
+          CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              child: Text(
+                ranking.toString(),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                result.fileName,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Tooltip(
+              message: 'Cosine similarity score',
+              child: Chip(
+                avatar: const Icon(
+                  Icons.analytics_outlined,
+                  size: 18,
+                ),
+                label: Text(
+                  formattedScore,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          result.description,
+          style: const TextStyle(
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: result.tags.map(
+                (tag) {
+              return Chip(
+                visualDensity:
+                VisualDensity.compact,
+                label: Text(tag),
+              );
+            },
+          ).toList(),
+        ),
+        const SizedBox(height: 12),
+        SelectableText(
+          result.filePath,
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall,
+        ),
+      ],
     );
   }
 }

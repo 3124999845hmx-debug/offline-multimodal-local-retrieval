@@ -5,7 +5,9 @@
 **Student Name:** Mingxuan Huang  
 **Project Title:** Offline Multimodal Local Retrieval System  
 **Week:** Week 8  
-**Date:** 2026/07/27
+**Final Revision Date:** 2026/07/30  
+**Validated Platform:** Windows Desktop  
+**Status:** Final
 
 ---
 
@@ -13,7 +15,7 @@
 
 The main objective of Week 8 was to complete the final validation, testing, documentation, and delivery preparation for the Offline Multimodal Local Retrieval System.
 
-Week 1 to Week 7 focused on progressively implementing:
+Week 1 to Week 7 progressively implemented:
 
 - Flutter project setup
 - File metadata extraction
@@ -24,26 +26,30 @@ Week 1 to Week 7 focused on progressively implementing:
 - Text chunking
 - Term-frequency vector generation
 - Cosine-similarity search
-- Flutter desktop search-interface integration
+- Flutter Windows desktop search-interface integration
 
-Week 8 focused on converting these weekly development outputs into a complete and reviewable project package.
+During the final Week 8 review, the project was also extended to support a second local content type: images.
 
-The specific Week 8 objectives were:
+The final Week 8 objectives were:
 
 - Review the complete project from Week 1 to Week 7.
-- Create a final Week 8 documentation structure.
+- Create the final Week 8 documentation structure.
 - Run final static analysis.
 - Replace the obsolete default Flutter counter test.
 - Add automated widget tests for the retrieval interface.
 - Resolve asynchronous file-I/O issues in widget tests.
 - Resolve widget-test layout overflow.
-- Run the final automated test suite.
+- Add JPG and PNG image metadata support.
+- Add local image metadata loading.
+- Add text-to-image retrieval.
+- Display local image thumbnails in the Flutter interface.
+- Add image descriptions, tags, paths, rankings, and scores.
+- Add automated image-retrieval tests.
+- Confirm that the original text retrieval still works.
+- Run the complete final automated test suite.
 - Run the Windows desktop application.
 - Perform final manual functional testing.
-- Create a final software test report.
-- Create a user guide.
-- Create a system architecture document.
-- Prepare the Week 8 progress report.
+- Create and update final software documentation.
 - Prepare final README and licence updates.
 - Prepare the project for final GitHub delivery.
 
@@ -51,77 +57,119 @@ The specific Week 8 objectives were:
 
 ## 2. Week 8 Deliverable Structure
 
-The following Week 8 documentation files were created:
+The Week 8 documentation structure is:
 
 ```text
 docs/week8/
 ├── images/
+│   ├── flutter_test_final.png
+│   ├── flutter_test_with_image_retrieval.png
+│   ├── github_week8_final.png
+│   ├── text_retrieval_after_image_extension.png
+│   ├── text_to_image_search_cat.png
+│   ├── windows_app_final_initial.png
+│   └── windows_app_final_search.png
 ├── Final_Test_Report.md
+├── Personal_Summary_Report.md
 ├── System_Architecture.md
 ├── User_Guide.md
 └── Week8_Progress_Report.md
 ```
 
-The current Week 8 evidence images include:
-
-```text
-flutter_test_final.png
-windows_app_final_initial.png
-windows_app_final_search.png
-github_week8_final.png
-```
-
-The updated automated widget-test file is:
+The final automated test files are:
 
 ```text
 test/widget_test.dart
+test/image_search_service_test.dart
+```
+
+The final image-search command-line scripts are:
+
+```text
+tool/test_image_metadata.dart
+tool/test_image_search.dart
 ```
 
 ---
 
-## 3. Week 8 Development Workflow
+## 3. Final Development Workflow
 
-The Week 8 finalisation workflow was:
+The finalisation and image-retrieval extension workflow was:
 
 ```text
 Review project state
-→ Create Week 8 documentation structure
+→ Run existing text-retrieval prototype
+→ Identify missing image-retrieval capability
+→ Prepare local JPG and PNG files
+→ Create image_metadata.json
+→ Create ImageDocument model
+→ Create ImageSearchResult model
+→ Create ImageMetadataService
+→ Create ImageSearchService
+→ Test image metadata loading
+→ Test text-to-image retrieval
+→ Integrate image search into SearchScreen
+→ Display image thumbnails and metadata
+→ Confirm original text retrieval still works
+→ Add formal image-retrieval tests
+→ Update widget tests
 → Run flutter analyze
 → Run flutter test
-→ Identify obsolete test
-→ Replace default widget test
-→ Resolve asynchronous test issues
-→ Resolve test viewport overflow
-→ Confirm all automated tests pass
 → Run Windows application
-→ Perform manual functional checks
 → Record evidence screenshots
-→ Write final test report
-→ Write user guide
-→ Write system architecture
-→ Write Week 8 progress report
-→ Update README and licence
-→ Final GitHub commit and push
+→ Update final documentation
+→ Prepare GitHub delivery
 ```
 
 ---
 
-## 4. Week 8 Project Structure
+## 4. Final Project Structure Changes
 
-The main Week 8 files are:
+The image-retrieval extension added the following files:
 
 ```text
-docs/week8/Final_Test_Report.md
-docs/week8/System_Architecture.md
-docs/week8/User_Guide.md
-docs/week8/Week8_Progress_Report.md
-docs/week8/images/
-test/widget_test.dart
+data/sample_images/
+├── car.jpg
+├── cat.jpg
+├── mountain.jpg
+├── office.jpg
+├── 微信截图.png
+└── image_metadata.json
 ```
 
-The Week 8 work does not replace the earlier weekly documentation.
+New models:
 
-Instead, it provides final validation and delivery documentation for the complete prototype.
+```text
+lib/models/image_document.dart
+lib/models/image_search_result.dart
+```
+
+New services:
+
+```text
+lib/services/image_metadata_service.dart
+lib/services/image_search_service.dart
+```
+
+New command-line tests:
+
+```text
+tool/test_image_metadata.dart
+tool/test_image_search.dart
+```
+
+New formal automated test:
+
+```text
+test/image_search_service_test.dart
+```
+
+Updated interface and widget test:
+
+```text
+lib/screens/search_screen.dart
+test/widget_test.dart
+```
 
 ---
 
@@ -133,20 +181,20 @@ The following command was executed:
 flutter analyze
 ```
 
-The result was:
+The final result was:
 
 ```text
-100 issues found
+139 issues found
 ```
 
-However, all reported issues were information-level lint notices.
+All 139 reported issues were information-level lint notices.
 
-The final result contained:
+The final static-analysis status was:
 
 ```text
-0 errors
-0 warnings
-100 info-level notices
+Errors: 0
+Warnings: 0
+Information-level notices: 139
 ```
 
 The main notice categories were:
@@ -164,13 +212,20 @@ Several service classes and command-line test scripts use:
 print(...)
 ```
 
-This is acceptable for the current prototype and debugging workflow.
+These statements provide useful execution evidence during prototype development and command-line testing.
+
+Examples include:
+
+- Unsupported file messages
+- Image metadata loading output
+- Search-result output
+- Test-stage summaries
 
 A production implementation should replace these calls with a structured logging framework.
 
 ### 5.2 `avoid_relative_lib_imports`
 
-Several command-line scripts under:
+Several scripts in:
 
 ```text
 tool/
@@ -178,11 +233,17 @@ tool/
 
 use relative paths to import project libraries.
 
-The scripts still function correctly, but package imports are preferred.
+For example:
+
+```dart
+import '../lib/services/image_search_service.dart';
+```
+
+The scripts execute correctly, but package imports are preferred for maintainability.
 
 ### 5.3 Dependency Notices
 
-The analysis output also reported newer available versions for:
+The analyzer also reported newer versions for:
 
 ```text
 matcher
@@ -191,38 +252,468 @@ test_api
 vector_math
 ```
 
-These versions were incompatible with the current dependency constraints.
+The newer versions were incompatible with the current dependency constraints.
 
-No upgrade was performed during finalisation because unnecessary dependency changes could introduce regression risk.
+No dependency upgrade was performed because the current versions were stable and functional, while unnecessary changes could introduce regression risk.
 
 ---
 
-## 6. Initial Automated Test Failure
+## 6. Image Retrieval Extension
 
-The first Week 8 automated test command was:
+The final prototype now supports two categories of local retrieval:
+
+```text
+Text query
+├── TXT and Markdown content retrieval
+└── JPG and PNG image metadata retrieval
+```
+
+The text-retrieval pipeline remains:
+
+```text
+Local text files
+→ File parsing
+→ Text processing
+→ Text chunking
+→ Vocabulary generation
+→ Term-frequency vectors
+→ Cosine similarity
+→ Ranked text results
+```
+
+The new image-retrieval pipeline is:
+
+```text
+Local image files
+→ Image metadata loading
+→ Description and tag processing
+→ Query normalisation
+→ Term-frequency vectors
+→ Cosine similarity
+→ Ranked image results
+→ Thumbnail display
+```
+
+---
+
+## 7. Image Metadata Design
+
+The image metadata file is:
+
+```text
+data/sample_images/image_metadata.json
+```
+
+Each image entry contains:
+
+```text
+fileName
+description
+tags
+```
+
+Example structure:
+
+```json
+{
+  "fileName": "cat.jpg",
+  "description": "A domestic cat sitting indoors.",
+  "tags": [
+    "cat",
+    "animal",
+    "pet",
+    "indoor",
+    "feline"
+  ]
+}
+```
+
+The system combines the image description and tags into searchable text:
+
+```text
+A domestic cat sitting indoors.
+cat animal pet indoor feline
+```
+
+The current implementation does not directly analyse image pixels with a neural image model.
+
+Therefore, the accurate description is:
+
+> The current text-to-image retrieval function searches local image descriptions and tags, rather than directly interpreting image pixels.
+
+---
+
+## 8. ImageDocument Model
+
+The following model was added:
+
+```text
+lib/models/image_document.dart
+```
+
+It stores:
+
+```text
+File name
+File path
+Description
+Tags
+Searchable text
+```
+
+The model converts JSON metadata into a typed Dart object.
+
+The main conversion process is:
+
+```text
+JSON entry
+→ Read fileName
+→ Read description
+→ Read tags
+→ Construct file path
+→ Generate searchableText
+→ Create ImageDocument
+```
+
+This typed model improves clarity and prevents image metadata from being passed through the program as unstructured maps.
+
+---
+
+## 9. Image Metadata Service
+
+The following service was added:
+
+```text
+lib/services/image_metadata_service.dart
+```
+
+Its responsibilities are:
+
+- Locate `image_metadata.json`
+- Read the JSON content
+- Confirm that the JSON root is an array
+- Convert entries into `ImageDocument` objects
+- Validate supported extensions
+- Confirm that each image file exists
+- Skip invalid or missing images safely
+- Return the final image-document list
+
+The currently supported image formats are:
+
+```text
+.jpg
+.jpeg
+.png
+```
+
+The service successfully loaded:
+
+```text
+Total Image Documents: 5
+```
+
+The loaded files were:
+
+```text
+car.jpg
+cat.jpg
+mountain.jpg
+office.jpg
+微信截图.png
+```
+
+---
+
+## 10. Image Metadata Command-Line Test
+
+The image metadata was tested using:
 
 ```bash
-flutter test
+dart run tool/test_image_metadata.dart
 ```
 
-The test failed with:
+The test confirmed:
 
 ```text
-Counter increments smoke test
+Total Image Documents: 5
 ```
 
-The failure message included:
+For every image, the script printed:
+
+- File name
+- File path
+- Description
+- Tags
+- Searchable text
+
+The execution ended with:
 
 ```text
-Expected: exactly one matching candidate
-Actual: Found 0 widgets with text "0"
+Image metadata loading test completed successfully.
 ```
 
-### Cause
+This confirmed the following pipeline:
 
-The original Flutter project template contained a counter demonstration.
+```text
+image_metadata.json
+→ ImageMetadataService
+→ Five ImageDocument objects
+```
 
-The default test expected:
+---
+
+## 11. Image Search Service
+
+The following service was added:
+
+```text
+lib/services/image_search_service.dart
+```
+
+The image search process is:
+
+```text
+User query
+→ Lowercase conversion
+→ Symbol removal
+→ Tokenisation
+→ Shared vocabulary generation
+→ Query-vector generation
+→ Image metadata-vector generation
+→ Cosine-similarity calculation
+→ Minimum-score filtering
+→ Descending score sorting
+→ Optional result limiting
+```
+
+Each returned item is stored as:
+
+```text
+ImageSearchResult
+```
+
+An image result contains:
+
+```text
+ImageDocument
++
+Similarity score
+```
+
+Similarity is stored separately because the image metadata remains constant, while the score changes for each query.
+
+---
+
+## 12. Image Search Command-Line Verification
+
+The following command was executed:
+
+```bash
+dart run tool/test_image_search.dart
+```
+
+The final results were:
+
+```text
+Query: vehicle road
+1. car.jpg
+Score: 0.4867
+```
+
+```text
+Query: animal pet
+1. cat.jpg
+Score: 0.4082
+```
+
+```text
+Query: mountain nature
+1. mountain.jpg
+Score: 0.4523
+```
+
+```text
+Query: office computer
+1. office.jpg
+Score: 0.6030
+```
+
+```text
+Query: video website gaming
+1. 微信截图.png
+Score: 0.5893
+```
+
+```text
+Query: completely unrelated words
+No matching images found.
+```
+
+The test ended with:
+
+```text
+Image search test completed successfully.
+```
+
+All planned image queries returned the expected top result.
+
+---
+
+## 13. Flutter Interface Integration
+
+The following file was updated:
+
+```text
+lib/screens/search_screen.dart
+```
+
+The application now loads both:
+
+```text
+data/sample_documents
+data/sample_images
+```
+
+The same query is sent to:
+
+```text
+SimilaritySearchService
++
+ImageSearchService
+```
+
+The updated search flow is:
+
+```text
+User enters one text query
+├── Search indexed text chunks
+└── Search indexed image metadata
+```
+
+The updated interface displays:
+
+```text
+Documents: 2
+Text chunks: 2
+Vocabulary: 17
+Text vectors: 2
+Images: 5
+```
+
+---
+
+## 14. Image Result Interface
+
+Each image-result card displays:
+
+- Ranking number
+- Image thumbnail
+- Image filename
+- Image description
+- Tags
+- Cosine-similarity score
+- Local file path
+
+The result layout adapts to available width.
+
+For a wider desktop window, the thumbnail and metadata are displayed horizontally.
+
+For a narrower window, the result uses a vertical layout.
+
+The interface uses:
+
+```dart
+Image.file(...)
+```
+
+to display the local image.
+
+If an image cannot be displayed, the card shows a broken-image placeholder instead of terminating the interface.
+
+---
+
+## 15. Text-to-Image Search Evidence
+
+The query:
+
+```text
+pet
+```
+
+returned:
+
+```text
+cat.jpg
+```
+
+The result displayed:
+
+```text
+Description:
+A domestic cat sitting indoors.
+
+Tags:
+cat
+animal
+pet
+indoor
+feline
+```
+
+![Text-to-Image Search](images/text_to_image_search_cat.png)
+
+**Figure 1.** Text-to-image retrieval result for the query `pet`, showing the matching local image, metadata, tags, path, and similarity score.
+
+This confirms:
+
+```text
+Text query
+→ Image-description and tag matching
+→ Ranked image result
+→ Local thumbnail display
+```
+
+---
+
+## 16. Text Retrieval Regression Verification
+
+After adding image retrieval, the original text search was tested again.
+
+The query:
+
+```text
+metadata extraction
+```
+
+returned:
+
+```text
+sample1.txt
+sample2.md
+```
+
+The results continued to display:
+
+- Ranking
+- Filename
+- Chunk index
+- Similarity score
+- Text preview
+- Local path
+
+![Text Retrieval After Image Extension](images/text_retrieval_after_image_extension.png)
+
+**Figure 2.** Original text retrieval working normally after the image-retrieval extension was integrated.
+
+This confirms that the image extension did not break the earlier text-retrieval pipeline.
+
+---
+
+## 17. Original Widget-Test Failure
+
+The original Flutter project template included a counter interface.
+
+The old widget test expected:
 
 ```text
 0
@@ -230,21 +721,21 @@ The default test expected:
 1
 ```
 
-However, Week 7 replaced the counter interface with the retrieval search interface.
+After the counter interface was replaced with the search interface, the default test became obsolete.
 
-The default test was therefore obsolete.
+The failure included:
 
-### Solution
+```text
+Counter increments smoke test
+```
 
-The old counter test was removed.
-
-A new retrieval-interface widget-test suite was created.
+The old counter test was removed and replaced with retrieval-interface tests.
 
 ---
 
-## 7. New Widget-Test Scope
+## 18. Widget-Test Scope
 
-The final test suite covers three user-interface behaviours:
+The final widget tests cover:
 
 ```text
 1. Application startup and retrieval-interface display
@@ -252,217 +743,96 @@ The final test suite covers three user-interface behaviours:
 3. Clear-button query removal
 ```
 
-The modified file is:
+The updated file is:
 
 ```text
 test/widget_test.dart
 ```
 
-The final test implementation is shown below.
+The startup test now verifies:
+
+- Application title
+- Updated loading message
+- Search interface
+- Search field
+- Search button
+- Clear button
+- Document count
+- Text chunk count
+- Vocabulary count
+- Text-vector count
+- Image count
+- Ready state
+
+---
+
+## 19. Widget-Test Problem: Loading Text Changed
+
+After image loading was introduced, the startup message changed from:
+
+```text
+Loading and indexing local documents...
+```
+
+to:
+
+```text
+Loading and indexing local documents and images...
+```
+
+The existing widget test still expected the old text.
+
+### Solution
+
+The test expectation was updated to:
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:offline_multimodal_retrieval/main.dart';
-
-/// Configures the widget test viewport to represent a Windows desktop window.
-///
-/// Flutter widget tests use a relatively small default viewport. The actual
-/// application is designed for a desktop window, so the tests should use a
-/// realistic desktop size to avoid artificial RenderFlex overflow errors.
-void configureDesktopTestView(WidgetTester tester) {
-  tester.view.physicalSize = const Size(1280, 900);
-  tester.view.devicePixelRatio = 1.0;
-
-  addTearDown(() {
-    tester.view.resetPhysicalSize();
-    tester.view.resetDevicePixelRatio();
-  });
-}
-
-/// Waits for a widget while allowing real asynchronous operations,
-/// including local directory access and file reading, to complete.
-///
-/// Widget tests normally use a controlled clock. The application performs
-/// real file-system I/O during retrieval-pipeline initialisation, so
-/// tester.runAsync() is required.
-Future<void> pumpUntilFoundWithIo(
-  WidgetTester tester,
-  Finder finder, {
-  int maximumAttempts = 30,
-  Duration interval = const Duration(milliseconds: 100),
-}) async {
-  for (var attempt = 0; attempt < maximumAttempts; attempt++) {
-    await tester.runAsync(() async {
-      await Future<void>.delayed(interval);
-    });
-
-    await tester.pump();
-
-    if (finder.evaluate().isNotEmpty) {
-      return;
-    }
-  }
-
-  throw TestFailure(
-    'The expected widget was not found after '
-    '$maximumAttempts attempts: $finder',
-  );
-}
-
-void main() {
-  testWidgets(
-    'Application starts and displays the retrieval interface',
-    (WidgetTester tester) async {
-      configureDesktopTestView(tester);
-
-      await tester.pumpWidget(const MyApp());
-
-      expect(
-        find.text('Offline Multimodal Local Retrieval'),
-        findsOneWidget,
-      );
-
-      expect(
-        find.text('Loading and indexing local documents...'),
-        findsOneWidget,
-      );
-
-      await pumpUntilFoundWithIo(
-        tester,
-        find.text('Search local content'),
-      );
-
-      expect(
-        find.text('Search local content'),
-        findsOneWidget,
-      );
-
-      expect(
-        find.byType(TextField),
-        findsOneWidget,
-      );
-
-      expect(
-        find.widgetWithText(FilledButton, 'Search'),
-        findsOneWidget,
-      );
-
-      expect(
-        find.widgetWithText(OutlinedButton, 'Clear'),
-        findsOneWidget,
-      );
-
-      expect(
-        find.textContaining('Documents'),
-        findsOneWidget,
-      );
-
-      expect(
-        find.textContaining('Text chunks'),
-        findsOneWidget,
-      );
-
-      expect(
-        find.textContaining('Vocabulary'),
-        findsOneWidget,
-      );
-
-      expect(
-        find.textContaining('Vectors'),
-        findsOneWidget,
-      );
-
-      expect(
-        find.text('Ready to search'),
-        findsOneWidget,
-      );
-    },
-  );
-
-  testWidgets(
-    'Empty search query displays a validation message',
-    (WidgetTester tester) async {
-      configureDesktopTestView(tester);
-
-      await tester.pumpWidget(const MyApp());
-
-      await pumpUntilFoundWithIo(
-        tester,
-        find.text('Search local content'),
-      );
-
-      await tester.tap(
-        find.widgetWithText(FilledButton, 'Search'),
-      );
-
-      await tester.pump();
-
-      expect(
-        find.text('Please enter a search query.'),
-        findsOneWidget,
-      );
-
-      expect(
-        tester.takeException(),
-        isNull,
-      );
-    },
-  );
-
-  testWidgets(
-    'Clear button removes the current search query',
-    (WidgetTester tester) async {
-      configureDesktopTestView(tester);
-
-      await tester.pumpWidget(const MyApp());
-
-      await pumpUntilFoundWithIo(
-        tester,
-        find.text('Search local content'),
-      );
-
-      final searchField = find.byType(TextField);
-
-      await tester.enterText(
-        searchField,
-        'metadata extraction',
-      );
-
-      await tester.pump();
-
-      expect(
-        find.text('metadata extraction'),
-        findsOneWidget,
-      );
-
-      await tester.tap(
-        find.widgetWithText(OutlinedButton, 'Clear'),
-      );
-
-      await tester.pump();
-
-      final textField = tester.widget<TextField>(
-        searchField,
-      );
-
-      expect(
-        textField.controller?.text,
-        isEmpty,
-      );
-
-      expect(
-        find.text('Ready to search'),
-        findsOneWidget,
-      );
-    },
-  );
-}
+find.text(
+  'Loading and indexing local documents and images...',
+)
 ```
 
 ---
 
-## 8. Widget-Test Problem: `pumpAndSettle()` Timeout
+## 20. Widget-Test Problem: Vector Label Changed
+
+The previous interface displayed:
+
+```text
+Vectors: 2
+```
+
+The updated interface displays:
+
+```text
+Text vectors: 2
+```
+
+The old widget test searched for:
+
+```text
+Vectors
+```
+
+and failed.
+
+### Solution
+
+The test was updated to check:
+
+```text
+Text vectors:
+```
+
+A new expectation was also added for:
+
+```text
+Images:
+```
+
+---
+
+## 21. Widget-Test Problem: `pumpAndSettle()` Timeout
 
 The first replacement widget tests used:
 
@@ -470,7 +840,7 @@ The first replacement widget tests used:
 pumpAndSettle()
 ```
 
-All tests timed out.
+The tests timed out.
 
 ### Cause
 
@@ -482,13 +852,11 @@ CircularProgressIndicator()
 
 during startup indexing.
 
-`pumpAndSettle()` waits until the widget tree stops scheduling frames.
-
-The continuously animated progress indicator prevented the interface from reaching a completely settled state.
+The animation continuously schedules frames, preventing `pumpAndSettle()` from reaching a fully settled state.
 
 ### Solution
 
-`pumpAndSettle()` was replaced with a bounded waiting helper.
+A bounded waiting helper was created.
 
 The helper repeatedly checked whether:
 
@@ -500,17 +868,9 @@ had appeared.
 
 ---
 
-## 9. Widget-Test Problem: Local File I/O
+## 22. Widget-Test Problem: Local File I/O
 
-The bounded helper still failed to find the retrieval interface.
-
-The test output reported:
-
-```text
-The expected widget was not found after 30 attempts
-```
-
-### Cause
+The bounded waiting helper initially failed to find the search interface.
 
 The application performs real asynchronous operations:
 
@@ -518,17 +878,11 @@ The application performs real asynchronous operations:
 Directory listing
 File reading
 Document parsing
+Image metadata loading
+Image-file validation
 ```
 
-Flutter widget tests normally use a controlled test clock.
-
-Calling only:
-
-```dart
-tester.pump()
-```
-
-did not allow the real local file-system operations to complete properly.
+Widget tests normally use a controlled clock.
 
 ### Solution
 
@@ -538,21 +892,21 @@ The final helper used:
 tester.runAsync(...)
 ```
 
-This allowed real asynchronous file operations to execute.
+This allowed real file-system operations to complete.
 
-The test then called:
+After each asynchronous delay, the test called:
 
 ```dart
 tester.pump()
 ```
 
-to rebuild the interface after the indexing state changed.
+to rebuild the interface.
 
 ---
 
-## 10. Widget-Test Problem: RenderFlex Overflow
+## 23. Widget-Test Problem: RenderFlex Overflow
 
-After file I/O was resolved, the empty-query test reported:
+The empty-query test previously reported:
 
 ```text
 A RenderFlex overflowed by 20 pixels on the bottom.
@@ -560,49 +914,93 @@ A RenderFlex overflowed by 20 pixels on the bottom.
 
 ### Cause
 
-Flutter widget tests use a relatively small default viewport.
-
-The application is designed for a Windows desktop window.
-
-When the validation message appeared, the small default viewport did not contain enough vertical space for the full interface.
+The default widget-test viewport was too small for the Windows desktop layout.
 
 ### Solution
 
-The test viewport was configured as:
+The test viewport was configured to:
 
 ```text
 1280 × 900
 ```
 
-The device pixel ratio was set to:
+with a device pixel ratio of:
 
 ```text
 1.0
 ```
 
-The viewport values were reset after each test.
-
-This removed the artificial layout overflow.
+The viewport was reset after each test.
 
 ---
 
-## 11. Final Automated Test Result
+## 24. Image Retrieval Automated Test Scope
 
-After all corrections, the following commands were run:
+The following formal test file was added:
+
+```text
+test/image_search_service_test.dart
+```
+
+It contains 11 separate automated test functions.
+
+### 24.1 Image Metadata Tests
+
+| Test | Expected Result |
+|---|---|
+| Load supported image documents | Five image documents loaded |
+| Build searchable text | Description and tags included |
+
+### 24.2 Text-to-Image Retrieval Tests
+
+| Query or Function | Expected Result |
+|---|---|
+| `vehicle road` | `car.jpg` |
+| `pet` | `cat.jpg` |
+| `mountain nature` | `mountain.jpg` |
+| `office computer` | `office.jpg` |
+| `video website gaming` | `微信截图.png` |
+| Unrelated query | Empty result |
+| Empty query | Empty result |
+| Result limit | Limit applied |
+| Sorting | Descending similarity order |
+
+These are 11 independent automated tests, rather than 11 manually interpreted scenarios in one script.
+
+---
+
+## 25. Final Automated Test Result
+
+The full command was:
 
 ```bash
-dart format test/widget_test.dart
 flutter test
 ```
 
-The result was:
+The final result was:
 
 ```text
-00:03 +0: Application starts and displays the retrieval interface
-00:04 +1: Empty search query displays a validation message
-00:05 +2: Clear button removes the current search query
-00:05 +3: All tests passed!
+00:09 +14: All tests passed!
 ```
+
+The final automated-test statistics were:
+
+| Test Group | Passed | Failed |
+|---|---:|---:|
+| Image metadata tests | 2 | 0 |
+| Image retrieval tests | 9 | 0 |
+| Flutter widget tests | 3 | 0 |
+| **Total** | **14** | **0** |
+
+The final pass rate was:
+
+```text
+100%
+```
+
+![Flutter Tests with Image Retrieval](images/flutter_test_with_image_retrieval.png)
+
+**Figure 3.** Final complete Flutter test suite showing 14 passed automated tests and no failures.
 
 The terminal also displayed:
 
@@ -610,52 +1008,36 @@ The terminal also displayed:
 Unsupported file type skipped: sample3.pdf
 ```
 
-This message is expected.
-
-It confirms that the parser safely skips unsupported PDFs without terminating the test.
-
-![Final Flutter Test](images/flutter_test_final.png)
-
-**Figure 1.** Final automated widget-test output showing three passed tests and no failures.
-
-The final automated test result was:
-
-```text
-Passed: 3
-Failed: 0
-Pass rate: 100%
-```
+This is expected and confirms that unsupported PDF files are skipped safely.
 
 ---
 
-## 12. Automated Test Coverage
+## 26. Automated Test Coverage
 
-The final automated tests validate:
+The final automated tests cover:
 
-- Application title
+- Local image metadata loading
+- Image-file validation
+- Searchable image text
+- Expected image retrieval
+- Empty query handling
+- Unrelated query handling
+- Result limiting
+- Similarity-score sorting
+- Application startup
 - Loading state
-- Completion of local indexing
+- Local file indexing
 - Search interface
-- Search query field
-- Search button
-- Clear button
-- Document summary
-- Text chunk summary
-- Vocabulary summary
-- Vector summary
-- Ready state
+- Search controls
+- Summary counters
 - Empty-query validation
-- Query entry
-- Query clearing
+- Clear-button behaviour
+- Desktop layout compatibility
 - Absence of rendering exceptions
 
-The tests do not yet cover every retrieval result in detail.
-
-The earlier command-line tests continue to provide service-level and integration-level evidence.
-
 ---
 
-## 13. Windows Desktop Execution
+## 27. Windows Desktop Execution
 
 The final Windows desktop command was:
 
@@ -672,11 +1054,7 @@ Built build\windows\x64\runner\Debug\offline_multimodal_retrieval.exe
 Syncing files to device Windows...
 ```
 
-The application built successfully in approximately:
-
-```text
-10.1 seconds
-```
+The Windows application built and launched successfully.
 
 The generated executable was:
 
@@ -684,90 +1062,71 @@ The generated executable was:
 build/windows/x64/runner/Debug/offline_multimodal_retrieval.exe
 ```
 
-The application then started normally.
-
 ---
 
-## 14. Final Windows Initial State
+## 28. Final Windows Initial State
 
 After startup, the application:
 
-- Scanned the local sample directory
-- Parsed supported files
+- Loaded image metadata
+- Verified five local images
+- Scanned the local document directory
+- Parsed supported text files
 - Skipped the unsupported PDF
 - Processed text
 - Generated chunks
-- Generated a vocabulary
-- Generated vectors
+- Generated a text vocabulary
+- Generated text vectors
 - Displayed the ready state
 
-![Final Windows Initial State](images/windows_app_final_initial.png)
-
-**Figure 2.** Final Windows desktop application after local indexing and before a user query is entered.
-
-The current application displays summary information such as:
+The interface displays:
 
 ```text
 Documents: 2
 Text chunks: 2
 Vocabulary: 17
-Vectors: 2
+Text vectors: 2
+Images: 5
 ```
 
-These values are consistent with the current sample dataset and Week 7 chunk configuration.
+![Final Windows Initial State](images/windows_app_final_initial.png)
+
+**Figure 4.** Windows desktop application after local text and image indexing.
 
 ---
 
-## 15. Final Search Verification
-
-The main final manual query was:
-
-```text
-metadata extraction
-```
-
-The application returned ranked results from the indexed local files.
-
-Each result displayed:
-
-- Ranking number
-- Source filename
-- Chunk index
-- Similarity score
-- Text preview
-- Local file path
-
-![Final Windows Search Result](images/windows_app_final_search.png)
-
-**Figure 3.** Final Windows desktop search result showing ranked local content for the query `metadata extraction`.
-
----
-
-## 16. Manual Functional Validation
+## 29. Manual Functional Validation
 
 The following functions were manually checked:
 
 | Test ID | Function | Result |
 |---|---|---|
 | MF-W8-001 | Windows application starts | Pass |
-| MF-W8-002 | Initial loading state appears | Pass |
-| MF-W8-003 | Local indexing completes | Pass |
-| MF-W8-004 | Summary counters appear | Pass |
-| MF-W8-005 | `metadata extraction` returns results | Pass |
-| MF-W8-006 | `markdown document` returns Markdown result | Pass |
-| MF-W8-007 | `unrelated query` displays empty state | Pass |
-| MF-W8-008 | Empty query displays validation | Pass |
-| MF-W8-009 | Clear removes query and results | Pass |
-| MF-W8-010 | Reload rebuilds index | Pass |
-| MF-W8-011 | Enter key triggers search | Pass |
-| MF-W8-012 | Unsupported PDF is skipped | Pass |
-| MF-W8-013 | Application exits normally | Pass |
+| MF-W8-002 | Loading state appears | Pass |
+| MF-W8-003 | Text indexing completes | Pass |
+| MF-W8-004 | Image metadata loading completes | Pass |
+| MF-W8-005 | Summary counters appear | Pass |
+| MF-W8-006 | `metadata extraction` returns text results | Pass |
+| MF-W8-007 | `markdown document` returns Markdown result | Pass |
+| MF-W8-008 | `pet` returns `cat.jpg` | Pass |
+| MF-W8-009 | `vehicle road` returns `car.jpg` | Pass |
+| MF-W8-010 | `mountain nature` returns `mountain.jpg` | Pass |
+| MF-W8-011 | `office computer` returns `office.jpg` | Pass |
+| MF-W8-012 | `video website gaming` returns screenshot | Pass |
+| MF-W8-013 | Unrelated query displays empty state | Pass |
+| MF-W8-014 | Empty query displays validation | Pass |
+| MF-W8-015 | Clear removes query and results | Pass |
+| MF-W8-016 | Reload rebuilds text and image indexes | Pass |
+| MF-W8-017 | Enter key triggers search | Pass |
+| MF-W8-018 | Unsupported PDF is skipped | Pass |
+| MF-W8-019 | Image thumbnails display | Pass |
+| MF-W8-020 | Application exits normally | Pass |
 
 ---
 
-## 17. Repeated PDF Skip Messages
+## 30. Repeated PDF Skip Messages
 
-During final execution, the terminal displayed:
+During execution and testing, the terminal displayed:
 
 ```text
 Unsupported file type skipped: sample3.pdf
@@ -775,22 +1134,20 @@ Unsupported file type skipped: sample3.pdf
 
 multiple times.
 
-This occurred because the local indexing pipeline was executed multiple times during:
+This occurred because the indexing pipeline was executed during:
 
 - Application startup
-- Reload tests
-- Repeated widget tests
-- Repeated manual validation
+- Reload testing
+- Widget tests
+- Manual validation
 
-This is expected behaviour.
-
-The message confirms that the unsupported file is detected and skipped safely.
+The message is expected and confirms safe unsupported-file handling.
 
 ---
 
-## 18. Final Test Documentation
+## 31. Final Test Documentation
 
-A separate final test document was created:
+A separate final test document is available at:
 
 ```text
 docs/week8/Final_Test_Report.md
@@ -803,206 +1160,182 @@ It records:
 - Static-analysis results
 - Automated test cases
 - Manual test cases
-- Test failures
 - Root-cause analysis
 - Corrective actions
 - Final pass result
 - Known limitations
 - Regression recommendations
 
-The final test report is marked:
-
-```text
-Version: 1.0
-Status: Final
-```
+The document should be updated to include the new image-retrieval extension and the final 14-test result.
 
 ---
 
-## 19. User Guide
+## 32. User Guide
 
-A final user guide was created:
+The final user guide is:
 
 ```text
 docs/week8/User_Guide.md
 ```
 
-The guide explains:
+The updated guide should explain:
 
-- System requirements
-- Required development tools
-- Supported file types
-- Dependency installation
-- Windows execution
-- Search operation
+- Supported text formats
+- Supported image formats
+- Image metadata requirements
+- Local execution
+- Text search
+- Text-to-image search
 - Result interpretation
+- Image thumbnails
 - Clear and Reload controls
-- Keyboard interaction
-- Troubleshooting
 - Privacy and offline behaviour
 - Current limitations
 
-The user guide allows another developer or evaluator to reproduce the main application workflow.
-
 ---
 
-## 20. System Architecture Document
+## 33. System Architecture Document
 
-A final architecture document was created:
+The final architecture document is:
 
 ```text
 docs/week8/System_Architecture.md
 ```
 
-It describes:
+The final architecture now includes:
 
-- Architectural layers
-- Project structure
-- Data models
-- Service modules
-- UI coordination
-- Retrieval pipeline
-- Vocabulary model
-- Term-frequency vectors
-- Cosine similarity
-- Local storage
-- Offline-first design
-- Error handling
-- Accessibility
-- Testing architecture
-- Future extension architecture
+```text
+Text branch:
+TXT / Markdown
+→ Parsing
+→ Processing
+→ Chunking
+→ Text vectors
+→ Text search
 
-The architecture document also clarifies that the project currently uses internal Dart APIs rather than an existing REST API.
+Image branch:
+JPG / PNG
+→ Metadata loading
+→ Description and tags
+→ Image metadata vectors
+→ Image search
+
+Shared interface:
+Text query
+→ Text results and/or image results
+```
+
+The project uses internal Dart service interfaces and does not implement HTTP or REST APIs.
 
 ---
 
-## 21. Week 6 Documentation Completion
+## 34. Week 6 Documentation
 
-Before Week 8, two missing Week 6 documents were identified and added:
+The project includes:
 
 ```text
 docs/week6/Week6_API_Interface_Definition.md
 docs/week6/Week6_Test_Report.md
 ```
 
-The API interface document describes:
+The Week 6 documents cover the original text embedding and similarity-search implementation.
 
-- Internal Dart data models
-- Service interfaces
-- Parameters
-- Return types
-- Preconditions
-- Error behaviour
-- Dependencies
-- Traceability
-
-The Week 6 test report describes:
-
-- Similarity-search testing
-- Pipeline test cases
-- Expected and actual results
-- Defects
-- Risks
-- Traceability
-
-These documents were reviewed during Week 8 finalisation and confirmed against the completed Week 6 source code and test evidence.
-
-Their document-control status was updated to:
+The Week 6 report records:
 
 ```text
-Version: 1.0
-Status: Final
+14 planned functional scenarios
+14 executed
+14 passed
+0 failed
+100% pass rate
+```
+
+These Week 6 scenarios are separate from the final Week 8 automated tests.
+
+The distinction is:
+
+```text
+Week 6:
+14 functional scenarios verified through an integration-oriented script
+
+Final Week 8:
+14 independent flutter test functions
 ```
 
 ---
 
-## 22. Documentation Standards
+## 35. Current Final Documentation Set
 
-The testing documents were organised with reference to:
-
-```text
-ISO/IEC/IEEE 29119-3 test documentation principles
-```
-
-The project does not claim formal ISO certification.
-
-The API document uses a structured internal interface-definition format.
-
-OpenAPI was not used because the current application does not implement HTTP or REST endpoints.
-
----
-
-## 23. Current Final Documentation Set
-
-The project now includes:
+The project includes:
 
 ```text
-Weekly progress reports
+Week 1–8 progress reports
 Week 6 API interface definition
 Week 6 software test report
 Week 7 Flutter UI progress report
 Week 8 final test report
 Week 8 user guide
-Week 8 system architecture document
+Week 8 system architecture
+Week 8 personal summary
 Week 8 progress report
-```
-
-The final project-level files were also completed:
-
-```text
 README.md
 LICENSE
 ```
-
-The root README now documents installation, execution, testing, architecture, supported features, limitations, and future development.
 
 The repository is distributed under the MIT License.
 
 ---
 
-## 24. Current Technical Status
+## 36. Current Technical Status
 
 | Area | Status | Notes |
 |---|---|---|
-| Flutter project setup | Completed | Multi-platform project structure |
-| Metadata extraction | Completed | Local metadata available |
+| Flutter project setup | Completed | Windows validated |
+| Metadata extraction | Completed | Local file metadata |
 | TXT parsing | Completed | Supported |
 | Markdown parsing | Completed | Supported |
+| JPG loading | Completed | Supported |
+| JPEG loading | Completed | Supported |
+| PNG loading | Completed | Supported |
+| Image metadata JSON | Completed | Description and tags |
 | PDF parsing | Pending | Safely skipped |
+| Word parsing | Future work | Not implemented |
+| PowerPoint parsing | Future work | Not implemented |
 | Text processing | Completed | Cleaning and normalisation |
-| Keyword search | Completed | Exact-term matching |
-| Ranked keyword search | Completed | Ranked results |
 | Text chunking | Completed | Configurable chunk size |
-| Shared vocabulary | Completed | Generated locally |
+| Shared text vocabulary | Completed | Generated locally |
 | Term-frequency vectors | Completed | Lightweight vector model |
-| Query-vector generation | Completed | Shared vocabulary used |
-| Cosine similarity | Completed | Ranked similarity |
-| Flutter search UI | Completed | Windows desktop interface |
-| Loading state | Completed | Startup and reload |
+| Text query vectors | Completed | Shared vocabulary |
+| Text cosine similarity | Completed | Ranked results |
+| Image metadata vectors | Completed | Description and tags |
+| Text-to-image retrieval | Completed | Metadata-based |
+| Image thumbnails | Completed | Local file display |
+| Image result tags | Completed | Displayed |
+| Image result paths | Completed | Displayed |
+| Image pixel understanding | Future work | No CLIP or CNN |
+| OCR | Future work | Not implemented |
+| Flutter search UI | Completed | Text and image results |
+| Loading state | Completed | Text and images |
 | Empty-query validation | Completed | User feedback |
-| Empty-result state | Completed | Safe no-result handling |
-| Clear button | Completed | Clears query and results |
-| Reload button | Completed | Rebuilds index |
-| Keyboard search | Completed | Enter supported |
-| Accessibility semantics | Completed | Initial semantic support |
-| Static analysis | Completed | No errors or warnings |
-| Widget tests | Completed | Three passed |
+| Empty-result state | Completed | Safe handling |
+| Clear button | Completed | Clears both result types |
+| Reload button | Completed | Reloads text and images |
+| Enter-key search | Completed | Supported |
+| Accessibility semantics | Completed | Initial support |
+| Static analysis | Completed | 0 errors, 0 warnings |
+| Automated tests | Completed | 14 passed |
 | Windows build | Completed | Successful |
 | Windows execution | Completed | Successful |
-| Final test report | Completed | Week 8 |
-| User guide | Completed | Week 8 |
-| System architecture | Completed | Week 8 |
-| README finalisation | Completed | Root README updated |
-| MIT licence | Completed | Root `LICENSE` added |
-| Persistent storage | Future work | In-memory only |
+| Final documentation | Completed | Week 8 |
+| Persistent storage | Future work | In-memory |
 | Neural embeddings | Future work | Not implemented |
-| Image retrieval | Future work | Not implemented |
+| Image-to-image retrieval | Future work | Not implemented |
 
 ---
 
-## 25. Problems and Solutions
+## 37. Problems and Solutions
 
-### 25.1 Obsolete Counter Test
+### 37.1 Obsolete Counter Test
 
 **Problem**
 
@@ -1018,7 +1351,7 @@ The old test was replaced with retrieval-interface tests.
 
 ---
 
-### 25.2 Animated Loading Timeout
+### 37.2 Animated Loading Timeout
 
 **Problem**
 
@@ -1026,7 +1359,7 @@ The old test was replaced with retrieval-interface tests.
 
 **Cause**
 
-The loading indicator continuously scheduled animation frames.
+The progress indicator continuously scheduled frames.
 
 **Solution**
 
@@ -1034,71 +1367,135 @@ A bounded widget-search helper was introduced.
 
 ---
 
-### 25.3 File-System I/O in Widget Tests
+### 37.3 File-System I/O in Widget Tests
 
 **Problem**
 
-The indexed search interface did not appear during the test.
+The search interface did not appear during testing.
 
 **Cause**
 
-Real directory and file operations did not complete under the normal controlled test clock.
+Real file and directory operations did not complete under the normal controlled test clock.
 
 **Solution**
 
-`tester.runAsync()` was used to allow real asynchronous file access.
+`tester.runAsync()` was used.
 
 ---
 
-### 25.4 Test Viewport Overflow
+### 37.4 Desktop Viewport Overflow
 
 **Problem**
 
-The empty-query test produced a vertical RenderFlex overflow.
+The empty-query test produced a RenderFlex overflow.
 
 **Cause**
 
-The default widget-test viewport was too small for the desktop-oriented interface.
+The default viewport was too small.
 
 **Solution**
 
-The test viewport was configured to 1280 × 900.
+The viewport was set to:
+
+```text
+1280 × 900
+```
 
 ---
 
-### 25.5 Dependency Update Notices
+### 37.5 Missing Test File
 
 **Problem**
 
-Four packages had newer versions.
+The first image-test command reported:
 
-**Cause**
+```text
+Does not exist
+```
 
-The newer versions were outside the current dependency constraints.
+### Cause
 
-**Solution**
+The image test file had not yet been created inside:
 
-The stable working dependency set was retained.
+```text
+test/
+```
+
+### Solution
+
+The file was created at:
+
+```text
+test/image_search_service_test.dart
+```
+
+The tests then loaded successfully.
 
 ---
 
-### 25.6 Static Analysis Notices
+### 37.6 Outdated Widget-Test Text
 
 **Problem**
 
-The analyzer reported 100 information-level notices.
+The startup widget test still expected:
 
-**Cause**
+```text
+Loading and indexing local documents...
+```
 
-Debug prints and relative imports remain in earlier services and tools.
+### Solution
 
-**Solution**
+The test was updated to:
 
-The notices were documented as maintainability improvements rather than release-blocking errors.
+```text
+Loading and indexing local documents and images...
+```
 
 ---
 
-## 26. Current Limitations
+### 37.7 Outdated Vector Label
+
+**Problem**
+
+The widget test searched for:
+
+```text
+Vectors:
+```
+
+The interface displayed:
+
+```text
+Text vectors:
+```
+
+### Solution
+
+The expectation was updated and a new `Images:` expectation was added.
+
+---
+
+### 37.8 Image and Metadata Consistency
+
+**Problem**
+
+An early sample image did not match its filename and description.
+
+### Solution**
+
+The image was replaced so that:
+
+```text
+cat.jpg
+```
+
+correctly displayed a cat and matched its metadata.
+
+This improved the clarity and credibility of the final demonstration.
+
+---
+
+## 38. Current Limitations
 
 The final prototype does not yet include:
 
@@ -1106,9 +1503,10 @@ The final prototype does not yet include:
 - Word parsing
 - PowerPoint parsing
 - OCR
-- Image embeddings
-- Multimodal retrieval
-- Neural semantic embeddings
+- Direct image-pixel analysis
+- CLIP or MobileCLIP embeddings
+- Image-to-image retrieval
+- Neural semantic text embeddings
 - Persistent vector storage
 - User-selected folders
 - Incremental indexing
@@ -1119,47 +1517,59 @@ The final prototype does not yet include:
 - Automated CI
 - Formal accessibility certification
 - Windows installer packaging
+- Web local-folder retrieval
+
+The current image search depends on manually prepared:
+
+```text
+description
+tags
+```
+
+Therefore, incorrect metadata can produce incorrect search results even when the program itself operates correctly.
 
 ---
 
-## 27. Key Week 8 Achievements
+## 39. Key Week 8 Achievements
 
 Week 8 completed the following major tasks:
 
-1. Created Week 8 documentation structure.
+1. Created the Week 8 documentation structure.
 2. Ran final static analysis.
-3. Recorded no compile-blocking errors.
-4. Replaced obsolete default Flutter test.
+3. Recorded zero errors and zero warnings.
+4. Replaced the obsolete default Flutter test.
 5. Added three retrieval-interface widget tests.
 6. Added realistic desktop viewport testing.
-7. Added real asynchronous file-I/O support in widget tests.
-8. Resolved `pumpAndSettle()` timeout.
+7. Added real asynchronous file-I/O support.
+8. Resolved loading-animation timeout.
 9. Resolved file-I/O waiting failure.
 10. Resolved RenderFlex overflow.
-11. Achieved three passing automated tests.
-12. Achieved 100% widget-test pass rate.
-13. Built the Windows desktop application.
-14. Successfully launched the application.
-15. Verified local document indexing.
-16. Verified ranked retrieval.
-17. Verified empty-query validation.
-18. Verified empty-result handling.
-19. Verified Clear control.
-20. Verified Reload control.
-21. Verified Enter-key search.
-22. Created final test evidence.
-23. Created final test report.
-24. Created user guide.
-25. Created system architecture document.
-26. Created Week 8 progress report.
-27. Completed the final root README.
-28. Added the MIT License.
-29. Committed and pushed the Week 8 finalisation.
-30. Captured final GitHub delivery evidence.
+11. Added five local image samples.
+12. Added image metadata JSON.
+13. Added `ImageDocument`.
+14. Added `ImageSearchResult`.
+15. Added `ImageMetadataService`.
+16. Added `ImageSearchService`.
+17. Added image metadata command-line testing.
+18. Added image search command-line testing.
+19. Added text-to-image retrieval.
+20. Added image thumbnails.
+21. Added image descriptions and tags.
+22. Added image paths and similarity scores.
+23. Added 11 image-related automated tests.
+24. Updated the widget test for image indexing.
+25. Achieved 14 passing automated tests.
+26. Achieved a 100% automated-test pass rate.
+27. Confirmed original text retrieval still works.
+28. Built the Windows application successfully.
+29. Verified text and image retrieval manually.
+30. Captured final evidence screenshots.
+31. Updated final documentation.
+32. Prepared final GitHub delivery.
 
 ---
 
-## 28. Final Test Summary
+## 40. Final Test Summary
 
 The final validation result was:
 
@@ -1167,10 +1577,22 @@ The final validation result was:
 Static analysis:
 0 errors
 0 warnings
-100 information-level notices
+139 information-level notices
+
+Image metadata tests:
+2 passed
+0 failed
+
+Image retrieval tests:
+9 passed
+0 failed
 
 Widget tests:
 3 passed
+0 failed
+
+Total automated tests:
+14 passed
 0 failed
 
 Windows build:
@@ -1183,7 +1605,7 @@ Manual functional checks:
 Passed
 ```
 
-The overall final technical result is:
+The overall final result is:
 
 ```text
 PASS
@@ -1191,120 +1613,132 @@ PASS
 
 ---
 
-## 29. Finalisation Completion Status
+## 41. Finalisation Checklist
 
-The finalisation checklist was completed:
-
-```text
-1. Root README.md updated
-2. MIT LICENSE added
-3. Week 8 Markdown documents reviewed
-4. Image links checked
-5. flutter analyze rerun
-6. flutter test rerun
-7. git status reviewed
-8. Intended files staged
-9. Week 8 finalisation committed
-10. Changes pushed to the main branch
-11. Final GitHub evidence captured
-12. Working tree confirmed clean
-```
-
-The final verification results were:
+The final checklist is:
 
 ```text
-flutter analyze:
-0 errors
-0 warnings
-100 information-level notices
-
-flutter test:
-3 passed
-0 failed
-
-git status:
-nothing to commit, working tree clean
+1. Local text retrieval verified
+2. Local image retrieval verified
+3. Image metadata checked
+4. Image thumbnails checked
+5. flutter analyze executed
+6. flutter test executed
+7. Fourteen tests passed
+8. Windows application executed
+9. Text regression screenshot saved
+10. Image retrieval screenshot saved
+11. Final test screenshot saved
+12. Week 8 documentation updated
+13. README to be updated
+14. User guide to be updated
+15. Architecture document to be updated
+16. Final test report to be updated
+17. Personal summary to be updated
+18. Git status to be reviewed
+19. Final changes to be committed
+20. Final changes to be pushed
 ```
 
 ---
 
-## 30. Week 8 Summary
+## 42. Week 8 Summary
 
-Week 8 converted the working retrieval prototype into a more complete and professionally documented software project.
+Week 8 transformed the existing local text-retrieval prototype into a broader local content-retrieval prototype.
+
+The final Windows application supports:
+
+```text
+Text query
+├── TXT and Markdown content retrieval
+└── JPG and PNG metadata-based retrieval
+```
+
+The completed system performs:
+
+```text
+Local files
+→ Content or metadata loading
+→ Text normalisation
+→ Vector generation
+→ Query comparison
+→ Cosine-similarity calculation
+→ Ranked text and image results
+→ Windows interface display
+```
 
 The project now includes:
 
 ```text
 Working Windows desktop application
 +
-Automated widget tests
+Text retrieval
++
+Metadata-based text-to-image retrieval
++
+Local image thumbnails
++
+Fourteen automated tests
 +
 Manual functional validation
 +
-Final test report
+Technical documentation
 +
-User guide
+Open-source licensing
 +
-System architecture document
-+
-Weekly progress documentation
+GitHub delivery structure
 ```
 
-The final application successfully performs:
+The final image capability should be described accurately as:
 
-```text
-Local file parsing
-→ Text processing
-→ Text chunking
-→ Vector generation
-→ Query comparison
-→ Ranked result display
-```
+> Metadata-based text-to-image retrieval using local image descriptions and tags.
 
-The Week 8 testing process also demonstrated an important software-engineering workflow:
+It should not be described as direct neural image understanding.
 
-```text
-Test failure
-→ Root-cause analysis
-→ Code correction
-→ Retest
-→ Final pass
-```
-
-The project-level presentation, open-source licensing, and repository delivery were also completed.
-
-The final Week 8 result confirms that the current prototype is functional, testable, reproducible, documented, licensed, and delivered through the remote GitHub repository.
+The final project is functional, testable, reproducible, documented, and capable of retrieving two different local content types through one unified query interface.
 
 ---
 
-## 31. Final GitHub Delivery
+## 43. Final GitHub Delivery
 
-The completed Week 8 source code, automated tests, final documentation, screenshots, README update, and MIT licence were committed and pushed to the remote GitHub repository.
-
-The final Week 8 update included:
+The final delivery should include:
 
 ```text
+data/sample_images/
+lib/models/image_document.dart
+lib/models/image_search_result.dart
+lib/services/image_metadata_service.dart
+lib/services/image_search_service.dart
+lib/screens/search_screen.dart
+test/image_search_service_test.dart
+test/widget_test.dart
+tool/test_image_metadata.dart
+tool/test_image_search.dart
+docs/week8/
 README.md
 LICENSE
-test/widget_test.dart
-docs/week8/Final_Test_Report.md
-docs/week8/System_Architecture.md
-docs/week8/User_Guide.md
-docs/week8/Week8_Progress_Report.md
-docs/week8/images/
 ```
 
-The commit message was:
+Recommended final commit message:
 
 ```text
-Complete Week 8 final testing and documentation
+Add local image retrieval and final automated tests
 ```
 
-The changes were successfully pushed to the `main` branch.
+After committing, the changes should be pushed to:
 
-![Final Week 8 GitHub Delivery](images/github_week8_final.png)
+```text
+main
+```
 
-**Figure 4.** Final GitHub repository state showing the Week 8 documentation, automated tests, updated README, MIT licence, and final delivery commit.
+The final repository should then be checked with:
 
-The repository was confirmed to be synchronised with the remote `main` branch, with no remaining uncommitted changes.
+```bash
+git status
+```
 
+The expected final result is:
+
+```text
+nothing to commit, working tree clean
+```
